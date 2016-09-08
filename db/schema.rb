@@ -27,9 +27,10 @@ ActiveRecord::Schema.define(version: 20160907044711) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.integer  "primary_auth_id", null: false
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.integer  "primary_auth_id",     null: false
+    t.datetime "earliest_token_time", null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
     t.index ["primary_auth_id"], name: "index_users_on_primary_auth_id", using: :btree
   end
 

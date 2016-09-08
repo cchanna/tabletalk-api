@@ -1,3 +1,3 @@
-json.user @user.id
-json.name @user.primary_auth.name
+json.user @auth.user.id
+json.name @auth.name
 json.token @token
