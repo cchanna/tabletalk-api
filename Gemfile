@@ -13,6 +13,7 @@ gem 'google-id-token'
 gem 'jwt'
 gem 'enum_accessor'
 gem 'figaro'
+gem 'rack-cors'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
