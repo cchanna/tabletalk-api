@@ -22,7 +22,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "returning user" do
-    auth = User.login '1', "test"
+    auth = User.login auths(:cerisa).uid, "test"
     assert auth.user, 'user should exist'
     assert auth.user.primary_auth, 'user should have primary auth'
     assert auth.user.earliest_token_time > 1.minute.ago, 'earliest_token_time should be recent'
@@ -30,7 +30,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "logout" do
-    auth = User.login '1', "test"
+    auth = User.login auths(:cerisa).uid, "test"
     travel 7.days
     assert auth.user.earliest_token_time < 1.minute.ago, 'earliest_token_time should not be recent'
     auth.user.logout

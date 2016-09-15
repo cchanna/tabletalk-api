@@ -10,11 +10,19 @@ class Token
   end
 
   def self.validate(token)
+    return nil if token.nil?
     values = decode token
+    return nil unless values
+    Rails::logger.debug values
     return nil if Time.current > values['iat'].to_datetime + EXPIRE_TIME
     user = User.find_by id: values['sub']
+    Rails::logger.debug user.id
     return nil unless user
-    return nil if user.earliest_token_time > values['iat'].to_time
+    Rails::logger.debug 'ETT ' + user.earliest_token_time.to_time.to_s
+    Rails::logger.debug 'IAT ' + (values['iat'].to_time + 1.second).to_s
+    Rails::logger.debug user.earliest_token_time > values['iat'].to_time + 1.second
+    return nil if user.earliest_token_time > values['iat'].to_time + 1.second
+    Rails::logger.debug user.id
     return user
   end
 

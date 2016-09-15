@@ -1,4 +1,6 @@
 class UserController < ApplicationController
+  skip_before_action :require_login, only: [:login]
+
   def login
     provider = nil
     if Rails.env.test?
@@ -6,10 +8,12 @@ class UserController < ApplicationController
     else
       provider = params[:provider] || "google"
     end
-    Rails::logger.debug params[:provider]
-    Rails::logger.debug provider
     @auth = User.login request.headers[:token], provider
     return render 'auth_error', status: :unauthorized unless @auth
     @token = Token.create_from @auth
+  end
+
+  def logout
+    @user.logout
   end
 end

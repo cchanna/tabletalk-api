@@ -20,10 +20,10 @@ class AuthTest < ActiveSupport::TestCase
   end
 
   test "valid test auth has user" do
-    auth = Auth.enticate '1', "test"
+    auth = Auth.enticate auths(:cerisa).uid, "test"
     assert auth.name, "auth should have name"
     assert auth.uid, "auth should have uid"
     assert auth.provider_test?, "provider should be test"
-    assert !auth.user.nil?, "user should exist"
+    assert_not_nil auth.user, "user should exist"
   end
 end

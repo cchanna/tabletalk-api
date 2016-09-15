@@ -9,7 +9,7 @@
 #
 # two: {}
 cerisa:
-  primary_auth: one
+  primary_auth: cerisa
   earliest_token_time: <%= 5.day.ago.to_s(:db) %>
   created_at: <%= 5.day.ago.to_s(:db) %>
 
