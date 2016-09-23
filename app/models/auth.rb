@@ -12,7 +12,6 @@ class Auth < ApplicationRecord
     when "google"
       validator = GoogleIDToken::Validator.new
       jwt = validator.check token, Figaro.env.google_client_id, Figaro.env.google_client_id
-      puts jwt
       if jwt
         auth = Auth.find_by google_auth_params jwt
         unless auth
