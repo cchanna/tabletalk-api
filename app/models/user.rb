@@ -6,7 +6,6 @@ class User < ApplicationRecord
     return nil unless auth
     if auth.user
       Rails::logger.debug 'RETURNING USER'
-      auth.user.earliest_token_time = Time.current
       auth.user.save!
     else
       Rails::logger.debug 'NEW USER'
