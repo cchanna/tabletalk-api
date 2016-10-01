@@ -25,7 +25,6 @@ class UserTest < ActiveSupport::TestCase
     auth = User.login auths(:cerisa).uid, "test"
     assert auth.user, 'user should exist'
     assert auth.user.primary_auth, 'user should have primary auth'
-    assert auth.user.earliest_token_time > 1.minute.ago, 'earliest_token_time should be recent'
     assert auth.user.created_at < 1.day.ago, 'creation date should not be recent'
   end
 
