@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class UserControllerTest < ActionDispatch::IntegrationTest
+class UsersControllerTest < ActionDispatch::IntegrationTest
   test "login without token" do
     post '/login', as: :json
     assert_response :unauthorized, "should return unauthorized"

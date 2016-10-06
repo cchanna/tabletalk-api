@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class GameControllerTest < ActionDispatch::IntegrationTest
+class GamesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @token = Token.create_from auths(:cerisa)
   end
