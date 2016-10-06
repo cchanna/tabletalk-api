@@ -65,7 +65,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
       player: 'hello'
     }
     assert_response :success, "should be successful"
-    assert_template :show, "should render index template"
+    assert_template :create, "should render create template"
     assert_not_nil assigns(:game), "game should be assigned"
   end
 end
