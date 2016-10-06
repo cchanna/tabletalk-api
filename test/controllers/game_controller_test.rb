@@ -63,11 +63,6 @@ class GameControllerTest < ActionDispatch::IntegrationTest
     }
     assert_response :success, "should be successful"
     assert_template :show, "should render index template"
-    assert_not_nil assigns(:name), "name should be assigned"
-    assert_not_nil assigns(:type), "type should be assigned"
-    assert_not_nil assigns(:players), "players should be assigned"
-    assert_not_nil assigns(:max_players), "max_players should be assigned"
-    assert_not_nil assigns(:me), "me should be assigned"
-    assert_not_nil assigns(:id), "id should be assigned"
+    assert_not_nil assigns(:game), "game should be assigned"
   end
 end
