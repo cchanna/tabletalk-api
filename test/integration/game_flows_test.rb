@@ -10,22 +10,23 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
   test "create and view new game" do
     games_count = users(:cerisa).games.length
 
-    game = {
+    input = {
       name: "Test game",
       type: 0,
       player: "Test player"
     }
-    post games_path, as: :json, headers: {token: @token}, params: game
+    post games_path, as: :json, headers: {token: @token}, params: input
     response = ActiveSupport::JSON.decode @response.body
-    assert response.key?(:id), "ID should be assigned"
-    assert response.key?(:maxPlayers), "Max players should be assigned"
-    assert response.key?(:name), "Name should be assigned"
-    assert response.key?(:type), "Type should be assigned"
-    assert response.key?(:players), "Players should be assigned"
-    assert_equal game.name, response.name, "Name should be correct"
-    assert_equal game.type, response.type, "Type should be correct"
-    assert_equal game.player, response.players[0].name, "Player name should be correct"
-    assert_equal users(:cerisa).id, response.players[response.me].user.id, "Me should be me"
+    game = response.game
+    assert game.key?(:id), "ID should be assigned"
+    assert game.key?(:maxPlayers), "Max players should be assigned"
+    assert game.key?(:name), "Name should be assigned"
+    assert game.key?(:type), "Type should be assigned"
+    assert game.key?(:players), "Players should be assigned"
+    assert_equal input.name, game.name, "Name should be correct"
+    assert_equal input.type, game.type, "Type should be correct"
+    assert_equal input.player, game.players[0].name, "Player name should be correct"
+    assert_equal users(:cerisa).id, game.players[game.me].user.id, "Me should be me"
 
     get games_path, as: :json, headers: {token: @token}
     response = ActiveSupport::JSON.decode @response.body
