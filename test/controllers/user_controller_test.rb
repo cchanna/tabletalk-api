@@ -15,7 +15,6 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil assigns(:token), "token should exist"
   end
 
-
   test "valid login with new user" do
     post '/login', as: :json, headers: {token: SecureRandom.hex(16)}
     assert_response :success, "should be successful"
