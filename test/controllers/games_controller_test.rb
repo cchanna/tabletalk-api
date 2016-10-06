@@ -34,6 +34,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
       player: 'hello'
     }
     assert_response :bad_request, "should return bad request"
+    assert_not_nil assigns(:param), "should assigned required param"
     assert_template :param_required_error, "should render param_required_error template"
   end
 
@@ -43,6 +44,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
       player: 'hello'
     }
     assert_response :bad_request, "should return bad request"
+    assert_not_nil assigns(:param), "should assigned required param"
     assert_template :param_required_error, "should render param_required_error template"
   end
 
@@ -52,6 +54,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
       type: 0
     }
     assert_response :bad_request, "should return bad request"
+    assert_not_nil assigns(:param), "should assigned required param"
     assert_template :param_required_error, "should render param_required_error template"
   end
 
