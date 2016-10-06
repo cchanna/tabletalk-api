@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20161006030054) do
   create_table "games", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.string   "name",                    null: false
     t.integer  "game_type",   default: 0, null: false
-    t.integer  "max_players",             null: false
+    t.integer  "max_players"
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end
