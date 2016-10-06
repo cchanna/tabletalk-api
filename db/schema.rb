@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160907044711) do
+ActiveRecord::Schema.define(version: 20161006030054) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
 
   create_table "auths", force: :cascade do |t|
     t.integer  "provider",   default: 0, null: false
@@ -24,6 +25,25 @@ ActiveRecord::Schema.define(version: 20160907044711) do
     t.datetime "updated_at",             null: false
     t.index ["uid", "provider"], name: "index_auths_on_uid_and_provider", using: :btree
     t.index ["user_id"], name: "index_auths_on_user_id", using: :btree
+  end
+
+  create_table "games", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.string   "name",                    null: false
+    t.integer  "game_type",   default: 0, null: false
+    t.integer  "max_players",             null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.integer  "user_id"
+    t.uuid     "game_id"
+    t.string   "name"
+    t.boolean  "admin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_players_on_game_id", using: :btree
+    t.index ["user_id"], name: "index_players_on_user_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
