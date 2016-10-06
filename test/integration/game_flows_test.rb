@@ -8,8 +8,6 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
   end
 
   test "create and view new game" do
-    get games_path, as: :json, headers: {token: @token}
-    response = ActiveSupport::JSON.decode @response.body
     games_count = users(:cerisa).games.length
 
     game = {
@@ -31,14 +29,15 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
 
     get games_path, as: :json, headers: {token: @token}
     response = ActiveSupport::JSON.decode @response.body
-    assert_equal games_count + 1, response.length, "Games count should be one higher"
+    assert_equal games_count + 1, response.games.length, "Games count should be one higher"
   end
 
   test "view games" do
     get games_path, as: :json, headers: {token: @token}
     response = ActiveSupport::JSON.decode @response.body
-    assert_equal users(:cerisa).games.length, response.length, "Result count should be correct"
-    for game in response
+    games = response.games
+    assert_equal users(:cerisa).games.length, games.length, "Result count should be correct"
+    for game in games
       expected = Game.find_by(id: game.id)
       assert game.key?(:id), "ID should be assigned"
       assert game.key?(:maxPlayers), "Max players should be assigned"
