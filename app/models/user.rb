@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_many :auths
+  has_many :players
+  has_many :games, through: :players
   belongs_to :primary_auth, class_name: 'Auth'
   def self.login(token, provider)
     auth = Auth.enticate token, provider
