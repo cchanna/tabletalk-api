@@ -1,3 +1,13 @@
+module ErrorHelper
+  def required(params, param)
+    unless params.key?(param)
+      @param = param.to_s
+      return render 'errors/required_param', status: :bad_request
+    end
+    return params[param]
+  end
+end
+
 class ApplicationController < ActionController::API
   before_action :require_login
 
