@@ -31,7 +31,7 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
     get games_path, as: :json, headers: {token: @token}
     games = ActiveSupport::JSON.decode @response.body
     assert_not_nil games, "Response should not be nil"
-    assert_equal games_count + 1, game.length, "Games count should be one higher"
+    assert_equal games_count + 1, games.length, "Games count should be one higher"
   end
 
   test "view games" do
