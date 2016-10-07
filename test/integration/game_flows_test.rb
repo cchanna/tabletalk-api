@@ -51,9 +51,8 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
       assert_equal expected.game_type, game['type'], "Type should be correct"
       assert_equal expected.players.length, game['players'].length, "Players count should be correct"
       assert_equal expected.max_players, game['maxPlayers'], "Max players should be correct"
-      expected_name = users(:cerisa).players.find_by(game_id: game['id'])
+      expected_name = users(:cerisa).players.find_by(game_id: game['id']).name
       assert_equal expected_name, game['players'][game['me']]['name'], "Me should be me"
     end
-    game = response[0]
   end
 end
