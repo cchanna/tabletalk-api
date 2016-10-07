@@ -17,6 +17,7 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
     }
     post games_path, as: :json, headers: {token: @token}, params: input
     game = ActiveSupport::JSON.decode @response.body
+    assert_not_nil game, "Response should not be nil"
     assert game.key?('id'), "ID should be assigned"
     assert game.key?('maxPlayers'), "Max players should be assigned"
     assert game.key?('name'), "Name should be assigned"
@@ -29,12 +30,14 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
 
     get games_path, as: :json, headers: {token: @token}
     games = ActiveSupport::JSON.decode @response.body
-    assert_equal games_count + 1, response['games'].length, "Games count should be one higher"
+    assert_not_nil games, "Response should not be nil"
+    assert_equal games_count + 1, game.length, "Games count should be one higher"
   end
 
   test "view games" do
     get games_path, as: :json, headers: {token: @token}
     games = ActiveSupport::JSON.decode @response.body
+    assert_not_nil games, "Response should not be nil"
     assert_equal users(:cerisa).games.length, games.length, "Result count should be correct"
     for game in games
       expected = Game.find_by(id: game['id'])
@@ -49,7 +52,7 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
       assert_equal expected.players.length, game['players'].length, "Players count should be correct"
       assert_equal expected.max_players, game['maxPlayers'], "Max players should be correct"
       expected_name = users(:cerisa).players.find_by(game_id: game['id'])
-      assert_equal expected_name, game.players[game.me].name, "Me should be me"
+      assert_equal expected_name, game['players'][game['me']]['name'], "Me should be me"
     end
     game = response[0]
   end
