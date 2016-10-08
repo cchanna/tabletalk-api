@@ -24,6 +24,6 @@ class GamesController < ApplicationController
     @game = Game.find_by(id: params[:id])
     return not_found unless @game
     player = required params, :player
-    player = Player.create name: player, game: @game, user: @user, admin: false
+    @game.players.create! name: player, user: @user, admin: false
   end
 end
