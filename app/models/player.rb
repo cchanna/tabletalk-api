@@ -3,6 +3,5 @@ class Player < ApplicationRecord
   belongs_to :user
 
   validates :name, presence: true, length: { maximum: 25}
-  validates :admin, presence: true
-
+  validates :admin, inclusion: { in: [true, false] }
 end
