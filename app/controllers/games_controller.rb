@@ -15,6 +15,7 @@ class GamesController < ApplicationController
   end
 
   def show
+    @user = User.authorize request.headers[:token]
     @game = Game.find_by(id: params[:id])
     return not_found unless @game
   end

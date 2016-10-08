@@ -1,4 +1,4 @@
-me = 0
+me = nil
 
 json.id game.id
 json.name game.name
