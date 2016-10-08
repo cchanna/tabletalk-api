@@ -77,7 +77,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show should return 404" do
-    get games_path(id: 'badgameid'), as: :json
+    get game_path('badgameid'), as: :json
     assert_response :not_found, "should return not found"
     assert_template :not_found
   end
