@@ -7,7 +7,7 @@ class PlayerTest < ActiveSupport::TestCase
     player.game = games(:world_of_adventure)
     player.user = users(:cerisa)
 
-    assert_nil player.save, "save should fail"
+    assert_not player.save, "save should fail"
   end
 
   test "admin should be required" do
@@ -16,7 +16,7 @@ class PlayerTest < ActiveSupport::TestCase
     player.game = games(:world_of_adventure)
     player.user = users(:cerisa)
 
-    assert_nil player.save, "save should fail"
+    assert_not player.save, "save should fail"
   end
 
   test "game should be required" do
@@ -25,7 +25,7 @@ class PlayerTest < ActiveSupport::TestCase
     player.admin = false
     player.user = users(:cerisa)
 
-    assert_nil player.save, "save should fail"
+    assert_not player.save, "save should fail"
   end
 
   test "user should be required" do
@@ -34,7 +34,7 @@ class PlayerTest < ActiveSupport::TestCase
     player.admin = false
     player.game = games(:world_of_adventure)
 
-    assert_nil player.save, "save should fail"
+    assert_not player.save, "save should fail"
   end
 
   test "name cannot be longer than 25 characters" do
@@ -44,7 +44,7 @@ class PlayerTest < ActiveSupport::TestCase
     player.game = games(:world_of_adventure)
     player.user = users(:cerisa)
 
-    assert_nil player.save, "save should fail"
+    assert_not player.save, "save should fail"
   end
 
   test "name cannot be empty" do
@@ -54,7 +54,7 @@ class PlayerTest < ActiveSupport::TestCase
     player.game = games(:world_of_adventure)
     player.user = users(:cerisa)
 
-    assert_nil player.save, "save should fail"
+    assert_not player.save, "save should fail"
   end
 
   test "player should save" do
@@ -64,6 +64,6 @@ class PlayerTest < ActiveSupport::TestCase
     player.game = games(:world_of_adventure)
     player.user = users(:cerisa)
 
-    assert_not_nil player.save, "save should succeed"
+    assert player.save, "save should succeed"
   end
 end
