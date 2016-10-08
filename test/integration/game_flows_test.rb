@@ -94,7 +94,7 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
     }
     game = ActiveSupport::JSON.decode @response.body
     assert_not_nil game, "Response should not be nil"
-    expected = games(:other_game)
+    expected = games(:other_game).reload
     validate_game(expected, game)
     assert_not_nil game['me'], "User should be player in this game"
   end
