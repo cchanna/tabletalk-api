@@ -3,7 +3,7 @@ class GamesController < ApplicationController
   include ErrorHelper
 
   def index
-    @games = @user.games
+    @games = @user.games.order(:name)
   end
 
   def create
