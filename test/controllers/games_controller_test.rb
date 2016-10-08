@@ -85,6 +85,8 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
   test "should join game" do
     post url_for([:join, games(:world_of_adventure)]), as: :json, headers: {
       token: @token
+    }, params: {
+      player: 'New player'
     }
     assert_response :success, "should be successful"
     assert_template :join, "should render join template"
@@ -92,7 +94,9 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "join should require auth" do
-    post url_for([:join, games(:world_of_adventure)])
+    post url_for([:join, games(:world_of_adventure)]), params: {
+      player: 'New player'
+    }
     assert_response :unauthorized, "should return unauthorized"
     assert_template :auth_error, "should render auth_error template"
   end

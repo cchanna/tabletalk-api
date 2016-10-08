@@ -3,5 +3,9 @@ Rails.application.routes.draw do
   post :login, to: 'users#login'
   post :logout, to: 'users#logout'
 
-  resources :games, only: [:index, :create]
+  resources :games, only: [:index, :create, :show] do
+    member do
+      post :join
+    end
+  end
 end

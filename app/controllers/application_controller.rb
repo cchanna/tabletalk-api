@@ -6,6 +6,10 @@ module ErrorHelper
     end
     return params[param]
   end
+
+  def not_found
+    return render 'errors/not_found', status: :not_found
+  end
 end
 
 class ApplicationController < ActionController::API
@@ -16,7 +20,6 @@ private
   def require_login
     @user = User.authorize request.headers[:token]
     return render 'users/auth_error', status: :unauthorized unless @user
-    Rails::logger.debug @user.id
   end
 
 end
