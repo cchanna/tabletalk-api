@@ -9,3 +9,15 @@ cerisa:
   name: 'cerisa'
   uid: 1
   user: cerisa
+
+amy:
+  provider: 'test'
+  name: 'Amy'
+  uid: 2
+  user: amy
+
+claire:
+  provider: 'test'
+  name: 'Claire'
+  uid: 3
+  user: claire

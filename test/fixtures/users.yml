@@ -13,4 +13,12 @@ cerisa:
   earliest_token_time: <%= 5.day.ago.to_s(:db) %>
   created_at: <%= 5.day.ago.to_s(:db) %>
 
-# column: value
+amy:
+  primary_auth: amy
+  earliest_token_time: <%= 5.day.ago.to_s(:db) %>
+  created_at: <%= 5.day.ago.to_s(:db) %>
+
+claire:
+  primary_auth: amy
+  earliest_token_time: <%= 5.day.ago.to_s(:db) %>
+  created_at: <%= 5.day.ago.to_s(:db) %>

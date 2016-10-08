@@ -8,3 +8,13 @@ cerisa:
   name: "Cerisa"
   game: world_of_adventure
   user: cerisa
+
+amy:
+  name: "Amy"
+  game: other_game
+  user: amy
+
+claire:
+  name: "Claire"
+  game: world_of_adventure
+  user: claire

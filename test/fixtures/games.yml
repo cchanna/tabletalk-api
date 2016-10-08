@@ -7,3 +7,7 @@
 world_of_adventure:
   name: "World of Adventure"
   game_type: 0
+
+other_game:
+  name: "Another game"
+  game_type: 0
