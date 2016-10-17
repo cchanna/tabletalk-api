@@ -26,7 +26,7 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
     assert_equal input[:name], game['name'], "Name should be correct"
     assert_equal input[:type], game['type'], "Type should be correct"
     assert_equal input[:player], game['players'][0]['name'], "Player name should be correct"
-    assert_equal game['players'][0]['id'], game['me'], "Me should be first player"
+    assert_equal 0, game['me'], "Me should be 0"
 
     get games_path, as: :json, headers: {token: @token}
     games = ActiveSupport::JSON.decode @response.body
@@ -67,7 +67,7 @@ class GameFlowsTest < ActionDispatch::IntegrationTest
       expected = Game.find_by(id: game['id'])
       validate_game(expected, game)
       expected_name = users(:cerisa).players.find_by(game_id: game['id']).name
-      assert_equal players(:cerisa).id, game['me'], "Me should be me"
+      assert_equal expected_name, game['players'][game['me']]['name'], "Me should be me"
     end
   end
 
