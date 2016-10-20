@@ -28,7 +28,10 @@ module TabletalkApi
     config.api_only = true
 
     config.action_cable.allowed_request_origins = [
-      'http://localhost:8080'
+      'http://localhost:8080',
+      'http://rose.local:8080',
+      'https://agile-reef-36732.herokuapp.com',
+      'https://table-talk.herokuapp.com'
     ]
 
     config.middleware.insert_before 'Rack::Runtime', 'Rack::Cors' do
