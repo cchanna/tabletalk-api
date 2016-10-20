@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161008194406) do
+ActiveRecord::Schema.define(version: 20161020022903) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,22 @@ ActiveRecord::Schema.define(version: 20161008194406) do
     t.datetime "updated_at",             null: false
     t.index ["uid", "provider"], name: "index_auths_on_uid_and_provider", using: :btree
     t.index ["user_id"], name: "index_auths_on_user_id", using: :btree
+  end
+
+  create_table "chats", force: :cascade do |t|
+    t.integer  "player_id",  null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_chats_on_player_id", using: :btree
+  end
+
+  create_table "dice", force: :cascade do |t|
+    t.integer  "roll_id",    null: false
+    t.integer  "kind",       null: false
+    t.integer  "result",     null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["roll_id"], name: "index_dice_on_roll_id", using: :btree
   end
 
   create_table "games", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
@@ -44,6 +60,22 @@ ActiveRecord::Schema.define(version: 20161008194406) do
     t.datetime "updated_at", null: false
     t.index ["game_id"], name: "index_players_on_game_id", using: :btree
     t.index ["user_id"], name: "index_players_on_user_id", using: :btree
+  end
+
+  create_table "rolls", force: :cascade do |t|
+    t.integer  "chat_id",                null: false
+    t.integer  "bonus",      default: 0, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.index ["chat_id"], name: "index_rolls_on_chat_id", using: :btree
+  end
+
+  create_table "talks", force: :cascade do |t|
+    t.integer  "chat_id",    null: false
+    t.string   "message",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_talks_on_chat_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
