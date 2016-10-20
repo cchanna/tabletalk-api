@@ -6,4 +6,4 @@ test:
 
 production:
   adapter: redis
-  url: Figaro.env.REDISTOGO_URL
+  url: <%= ENV['REDISTOGO_URL'] %>
