@@ -35,18 +35,18 @@ class WorldOfAdventureChannel < ApplicationCable::Channel
 
   def roll(data)
     bonus = 0
-    if data.hasKey? 'bonus'
+    if data.has_key? 'bonus'
       bonus = data['bonus']
     end
-    return unless data.hasKey? 'request'
-    results = []
-    results.push rand 1..6
-    results.push rand 1..6
+    return unless data.has_key? 'request'
+    result = []
+    result.push rand 1..6
+    result.push rand 1..6
     out = {
       action: ACTIONS[:roll],
       player: @player.id,
       bonus: bonus,
-      results: results,
+      result: result,
       request: data['request']
     }
     broadcast out
