@@ -63,7 +63,6 @@ Rails.application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
-  config.middleware.use ChatActionCable
   config.web_socket_server_url = ENV["CABLE_URI"]
 
   # Use a different logger for distributed setups.
