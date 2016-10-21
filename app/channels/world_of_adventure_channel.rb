@@ -23,15 +23,15 @@ class WorldOfAdventureChannel < ApplicationCable::Channel
   def talk(data)
     return unless data.has_key? 'message'
     return unless data.has_key? 'request'
+    chat = Chat.talk player: @player, message: data['message']
     out = {
-      id: rand(0..1000000),
+      id: chat.id,
       action: ACTIONS[:talk],
       player: @player.id,
-      message: data['message'],
+      message: chat.talk.message,
       request: data['request']
     }
     broadcast out
-    chat = Chat.talk player: @player, message: data['message']
   end
 
   def roll(data)
@@ -43,6 +43,7 @@ class WorldOfAdventureChannel < ApplicationCable::Channel
     dice = [:d6, :d6]
     chat = Chat.roll player: @player, dice: dice, bonus: bonus
     out = {
+      id: chat.id,
       action: ACTIONS[:roll],
       player: @player.id,
       bonus: bonus,
