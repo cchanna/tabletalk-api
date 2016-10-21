@@ -34,6 +34,6 @@ class GamesController < ApplicationController
     return not_found unless @game
     player = Player.find_by game: @game, user: @user
     return not_found unless player
-    @chats = Chat.order(created_at: :desc).where(player: player).limit(100).reverse
+    @chats = Chat.order(created_at: :desc).where(game: @game).limit(100).reverse
   end
 end
