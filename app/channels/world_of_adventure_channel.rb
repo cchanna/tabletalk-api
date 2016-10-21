@@ -1,10 +1,5 @@
 # Be sure to restart your server when you modify this file. Action Cable runs in an EventMachine loop that does not support auto reloading.
 
-ACTIONS = {
-  talk: 0,
-  roll: 1
-}
-
 class WorldOfAdventureChannel < ApplicationCable::Channel
 
   def subscribed
@@ -26,10 +21,11 @@ class WorldOfAdventureChannel < ApplicationCable::Channel
     chat = Chat.talk player: @player, message: data['message']
     out = {
       id: chat.id,
-      action: ACTIONS[:talk],
+      action: Chat.actions[:talk],
       player: @player.id,
       message: chat.talk.message,
-      request: data['request']
+      request: data['request'],
+      timestamp: chat.created_at
     }
     broadcast out
   end
@@ -44,11 +40,12 @@ class WorldOfAdventureChannel < ApplicationCable::Channel
     chat = Chat.roll player: @player, dice: dice, bonus: bonus
     out = {
       id: chat.id,
-      action: ACTIONS[:roll],
+      action: Chat.actions[:roll],
       player: @player.id,
       bonus: bonus,
       result: chat.roll.result,
-      request: data['request']
+      request: data['request'],
+      timestamp: chat.created_at
     }
     broadcast out
   end

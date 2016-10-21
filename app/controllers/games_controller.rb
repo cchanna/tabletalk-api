@@ -21,9 +21,19 @@ class GamesController < ApplicationController
   end
 
   def join
-    @game = Game.find_by(id: params[:id])
+    @game = Game.find_by id: params[:id]
     return not_found unless @game
     player = required params, :player
-    @game.players.create! name: player, user: @user, admin: false
+    data = @game.players.create! name: player, user: @user, admin: false
+    game_type = Game.types[@game.game_type].downcase.tr(' ', '_')
+    ActionCable.server.broadcast "#{game_type}_#{@game.id}", data
+  end
+
+  def load
+    @game = Game.find_by id: params[:id]
+    return not_found unless @game
+    player = Player.find_by game: @game, user: @user
+    return not_found unless player
+    @chats = Chat.order(created_at: :desc).where(player: player).limit(100).reverse
   end
 end

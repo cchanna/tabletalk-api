@@ -100,4 +100,14 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized, "should return unauthorized"
     assert_template :auth_error, "should render auth_error template"
   end
+
+  test "game should load" do
+    get url_for([:load, games(:world_of_adventure)]), as: :json, headers: {
+      token: @token
+    }
+    assert_response :success, "should be successful"
+    assert_template :load, "should render load template"
+    assert_not_nil assigns(:game), "game should be assigned"
+    assert_not_nil assigns(:chats), "chats should be assigned"
+  end
 end
