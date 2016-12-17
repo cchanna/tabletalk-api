@@ -1,7 +1,8 @@
 class Game < ApplicationRecord
   def self.types
     return [
-      'World of Adventure'
+      'World of Adventure',
+      'Blades in the Dark',
     ]
   end
 
