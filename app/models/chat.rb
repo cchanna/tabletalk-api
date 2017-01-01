@@ -6,7 +6,8 @@ class Chat < ApplicationRecord
   def self.actions
     return {
       talk: 0,
-      roll: 1
+      roll: 1,
+      join: 2
     }
   end
 

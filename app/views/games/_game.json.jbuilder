@@ -8,7 +8,7 @@ json.players do
     json.name player.name
     json.admin player.admin
     json.id player.id
-    if @user && player.user.id == @user.id
+    if @user && player.user_id == @user.id
       me = player.id
     end
   end

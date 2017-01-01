@@ -26,6 +26,12 @@ class GamesController < ApplicationController
     player = required params, :player
     data = @game.players.create! name: player, user: @user, admin: false
     game_type = Game.types[@game.game_type].downcase.tr(' ', '_')
+    out = {
+      action: Chat.actions[:join],
+      id: data.id,
+      name: data.name,
+      admin: data.admin
+    }
     ActionCable.server.broadcast "#{game_type}_#{@game.id}", data
   end
 
