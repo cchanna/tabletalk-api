@@ -13,3 +13,10 @@ json.chats do
     end
   end
 end
+json.players do
+  json.array! @game.players.each do |player|
+    json.id player.id
+    json.name player.name
+    json.admin player.admin
+  end
+end
