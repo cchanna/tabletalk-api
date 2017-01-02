@@ -32,7 +32,7 @@ class GamesController < ApplicationController
       name: data.name,
       admin: data.admin
     }
-    ActionCable.server.broadcast "#{game_type}_#{@game.id}", data
+    ActionCable.server.broadcast @game.id.to_s, data
   end
 
   def load
