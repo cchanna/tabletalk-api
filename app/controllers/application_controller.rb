@@ -10,12 +10,12 @@ module ErrorHelper
   def not_found
     return render 'errors/not_found', status: :not_found
   end
+
+
 end
 
 class ApplicationController < ActionController::API
   before_action :require_login
-
-private
 
   def require_login
     @user = User.authorize request.headers[:token]
