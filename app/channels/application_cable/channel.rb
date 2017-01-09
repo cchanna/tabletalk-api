@@ -30,8 +30,6 @@ module ApplicationCable
     end
 
     def self.broadcast data, from:
-      puts from
-      puts Player.find_by(id: from)
       game = from.respond_to?(:game) ? from.game : Player.find_by(id: from).game
       game.reload
       players = game.players

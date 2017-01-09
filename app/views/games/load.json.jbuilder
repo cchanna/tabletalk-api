@@ -22,4 +22,7 @@ json.players do
     end
   end
 end
+if @data
+  json.data @data
+end
 json.me @me

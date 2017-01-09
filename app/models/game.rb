@@ -1,8 +1,8 @@
 class Game < ApplicationRecord
   def self.types
     return [
-      'World of Adventure',
-      'Blades in the Dark',
+      :world_of_adventure,
+      :blades_in_the_dark,
     ]
   end
 

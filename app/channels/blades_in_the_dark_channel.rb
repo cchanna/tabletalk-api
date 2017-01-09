@@ -1,6 +1,7 @@
 # Be sure to restart your server when you modify this file. Action Cable runs in an EventMachine loop that does not support auto reloading.
 
 class BladesInTheDarkChannel < ApplicationCable::Channel
+  include Blades
   def roll(data)
     level = 0
     if data.key? 'level' and !data['level'].nil?
@@ -32,16 +33,20 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
   end
 
   def update args
-    return unless args.key? 'data'
-    data = args['data']
-    if data.key? 'character'
-      puts data.inspect
+    args = args.deep_symbolize_keys
+    return unless args.key? :data
+    data = args[:data]
+    newData = {}
+    if data.key? :character
+      if Character.update_with data[:character]
+        newData[:character] = data[:character]
+      end
     end
     out = {
-      data: data,
+      data: newData[:character],
       player: @player.id,
       action: 'update',
-      key: args['key']
+      key: args[:key]
     }
     broadcast out
   end

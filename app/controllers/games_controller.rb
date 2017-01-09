@@ -15,7 +15,6 @@ class GamesController < ApplicationController
   end
 
   def show
-    puts 'hello'
     if request.headers.key? :token
       require_login
     end
@@ -28,7 +27,6 @@ class GamesController < ApplicationController
     return not_found unless @game
     player = required params, :player
     data = @game.players.create! name: player, user: @user, admin: false
-    game_type = Game.types[@game.game_type].downcase.tr(' ', '_')
     out = {
       action: Chat.actions[:join],
       id: data.id,
@@ -43,6 +41,7 @@ class GamesController < ApplicationController
     return not_found unless @game
     player = Player.find_by game: @game, user: @user
     return not_found unless player
+    @data = player.load
     @chats = Chat.order(created_at: :desc).where(player: @game.players).limit(100).reverse
     @me = player.id
   end
