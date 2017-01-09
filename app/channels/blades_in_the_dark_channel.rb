@@ -38,7 +38,7 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
     data = args[:data]
     newData = {}
     if data.key? :character
-      if Character.update_with data[:character]
+      if Character.update_with data[:character], as: @player
         newData[:character] = data[:character]
       end
     end

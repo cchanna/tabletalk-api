@@ -12,7 +12,10 @@ class Blades::Character < ApplicationRecord
 
   has_many :blades_character_permissions, foreign_key: :character
 
-  def update_with data
+  def update_with data, as:
+    id = as.responds_to? :id ? as.id : as
+    permission = Blades::CharacterPermission.find_by player_id: id, character: self
+    return nil unless permission && permission.edit
     if data.key? :stats
       stats = data[:stats]
       if stats.key? :money
@@ -24,11 +27,11 @@ class Blades::Character < ApplicationRecord
     return save
   end
 
-  def self.update_with data
+  def self.update_with data, as:
     return nil unless data.key? :id
     character = find_by id: data[:id]
     return nil unless character
-    return character.update_with data
+    return character.update_with data, as: as
   end
 
   def self.load player_id
