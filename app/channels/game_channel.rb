@@ -1,1 +1,0 @@
-class GameChannel < ApplicationCable::Channel

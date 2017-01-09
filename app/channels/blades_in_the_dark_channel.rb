@@ -3,10 +3,10 @@
 class BladesInTheDarkChannel < ApplicationCable::Channel
   def roll(data)
     level = 0
-    if data.has_key? 'level' and !data['level'].nil?
+    if data.key? 'level' and !data['level'].nil?
       level = data['level']
     end
-    return unless data.has_key? 'request'
+    return unless data.key? 'request'
     dice = []
     if level == 0
       dice = [:d6, :d6]
@@ -20,12 +20,28 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
     chat = Chat.roll player: @player, dice: dice, bonus: level
     out = {
       id: chat.id,
-      action: Chat.actions[:roll],
+      action: 'roll',
       player: @player.id,
       bonus: level,
       result: chat.roll.result,
       request: data['request'],
-      timestamp: chat.created_at
+      timestamp: chat.created_at,
+      key: data['key']
+    }
+    broadcast out
+  end
+
+  def update args
+    return unless args.key? 'data'
+    data = args['data']
+    if data.key? 'character'
+      puts data.inspect
+    end
+    out = {
+      data: data,
+      player: @player.id,
+      action: 'update',
+      key: args['key']
     }
     broadcast out
   end

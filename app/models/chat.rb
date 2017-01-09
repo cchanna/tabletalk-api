@@ -3,14 +3,6 @@ class Chat < ApplicationRecord
   has_one :talk
   has_one :roll
 
-  def self.actions
-    return {
-      talk: 0,
-      roll: 1,
-      join: 2
-    }
-  end
-
   def self.roll(args)
     player = args[:player]
     return nil unless player

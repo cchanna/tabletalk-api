@@ -4,7 +4,7 @@ module ApplicationCable
       @game = Game.find_by id: params['game_id']
       @player = Player.find_by game: @game, user: current_user
       stop_all_streams
-      stream_from @game.id.to_s
+      stream_from @player.id.to_s
       @subscribed = true
     end
 
@@ -14,11 +14,12 @@ module ApplicationCable
       chat = Chat.talk player: @player, message: data['message']
       out = {
         id: chat.id,
-        action: Chat.actions[:talk],
+        action: 'talk',
         player: @player.id,
         message: chat.talk.message,
         request: data['request'],
-        timestamp: chat.created_at
+        timestamp: chat.created_at,
+        key: data['key']
       }
       broadcast out
     end
@@ -28,10 +29,27 @@ module ApplicationCable
       @subscribed = false
     end
 
+    def self.broadcast data, from:
+      puts from
+      puts Player.find_by(id: from)
+      game = from.respond_to?(:game) ? from.game : Player.find_by(id: from).game
+      game.reload
+      players = game.players
+      Channel.send data, to: players
+    end
+
+    def self.send data, to:
+      players = Array to
+      players.each do |player|
+        id = player.respond_to?(:id) ? player.id : player
+        ActionCable.server.broadcast id.to_s, data
+      end
+    end
+
   protected
 
-    def broadcast(data)
-      ActionCable.server.broadcast @game.id.to_s, data
+    def broadcast data
+      Channel.broadcast data, from: @player
     end
   end
 end

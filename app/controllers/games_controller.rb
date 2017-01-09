@@ -35,7 +35,7 @@ class GamesController < ApplicationController
       name: data.name,
       admin: data.admin
     }
-    ActionCable.server.broadcast @game.id.to_s, data
+    Channel.broadcast data, from: data.id
   end
 
   def load
@@ -44,5 +44,6 @@ class GamesController < ApplicationController
     player = Player.find_by game: @game, user: @user
     return not_found unless player
     @chats = Chat.order(created_at: :desc).where(player: @game.players).limit(100).reverse
+    @me = player.id
   end
 end

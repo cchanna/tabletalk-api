@@ -5,18 +5,21 @@ json.chats do
     json.timestamp chat.created_at.to_f * 1000
     if chat.talk
       json.message chat.talk.message
-      json.action Chat.actions[:talk]
+      json.action 'talk'
     elsif chat.roll
       json.result chat.roll.result
       json.bonus chat.roll.bonus
-      json.action Chat.actions[:roll]
+      json.action 'roll'
     end
   end
 end
 json.players do
-  json.array! @game.players.each do |player|
-    json.id player.id
-    json.name player.name
-    json.admin player.admin
+  @game.players.each do |player|
+    json.set! player.id do
+      json.id player.id
+      json.name player.name
+      json.admin player.admin
+    end
   end
 end
+json.me @me
