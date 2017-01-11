@@ -29,25 +29,25 @@ module ApplicationCable
       @subscribed = false
     end
 
-    def self.broadcast data, from:
-      game = from.respond_to?(:game) ? from.game : Player.find_by(id: from).game
-      game.reload
-      players = game.players
-      Channel.send data, to: players
-    end
-
-    def self.send data, to:
-      players = Array to
-      players.each do |player|
-        id = player.respond_to?(:id) ? player.id : player
-        ActionCable.server.broadcast id.to_s, data
+    def self.broadcast data, from: nil, to: nil
+      if to
+        players = Array to
+        players.each do |player|
+          id = player.respond_to?(:id) ? player.id : player
+          ActionCable.server.broadcast id.to_s, data
+        end
+      elsif from
+        game = from.respond_to?(:game) ? from.game : Player.find_by(id: from).game
+        game.reload
+        players = game.players
+        Channel.broadcast data, to: players
       end
     end
 
   protected
 
-    def broadcast data
-      Channel.broadcast data, from: @player
+    def broadcast data, to: nil
+      Channel.broadcast data, from: @player, to: to
     end
   end
 end

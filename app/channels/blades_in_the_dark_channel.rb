@@ -37,17 +37,25 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
     return unless args.key? :data
     data = args[:data]
     newData = {}
+    permitted_players = []
     if data.key? :character
+      character = data[:character]
+      return unless character.key? :id
+      permissions = CharacterPermission.where character_id: character[:id], view: true
+      permissions.each do |permission|
+        permitted_players.push permission.player_id
+      end
       if Character.update_with data[:character], as: @player
         newData[:character] = data[:character]
       end
     end
+    return if newData.blank?
     out = {
       data: newData[:character],
       player: @player.id,
       action: 'update',
       key: args[:key]
     }
-    broadcast out
+    broadcast out, to: permitted_players
   end
 end
