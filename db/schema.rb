@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170109043146) do
+ActiveRecord::Schema.define(version: 20170112061819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,51 +39,60 @@ ActiveRecord::Schema.define(version: 20170109043146) do
   end
 
   create_table "blades_characters", force: :cascade do |t|
-    t.string   "name",             limit: 50,                 null: false
-    t.string   "playbook",         limit: 20
-    t.string   "aka",              limit: 50
+    t.string   "name",               limit: 50,                 null: false
+    t.string   "playbook",           limit: 20
+    t.string   "aka",                limit: 50
     t.text     "look"
     t.text     "heritage"
     t.text     "background"
     t.text     "vice"
-    t.integer  "stress",           limit: 2,  default: 0,     null: false
-    t.boolean  "healing_unlocked",            default: false, null: false
-    t.integer  "healing_clock",    limit: 2,  default: 0,     null: false
-    t.boolean  "harm_severe",                 default: false, null: false
-    t.boolean  "harm_moderate1",              default: false, null: false
-    t.boolean  "harm_moderate2",              default: false, null: false
-    t.boolean  "harm_lesser1",                default: false, null: false
-    t.boolean  "harm_lesser2",                default: false, null: false
-    t.boolean  "armor_normal",                default: false, null: false
-    t.boolean  "armor_heavy",                 default: false, null: false
-    t.integer  "playbook_xp",      limit: 2,  default: 0,     null: false
-    t.integer  "hunt",             limit: 2,  default: 0,     null: false
-    t.integer  "study",            limit: 2,  default: 0,     null: false
-    t.integer  "survey",           limit: 2,  default: 0,     null: false
-    t.integer  "tinker",           limit: 2,  default: 0,     null: false
-    t.integer  "finesse",          limit: 2,  default: 0,     null: false
-    t.integer  "prowl",            limit: 2,  default: 0,     null: false
-    t.integer  "skirmish",         limit: 2,  default: 0,     null: false
-    t.integer  "wreck",            limit: 2,  default: 0,     null: false
-    t.integer  "attune",           limit: 2,  default: 0,     null: false
-    t.integer  "command",          limit: 2,  default: 0,     null: false
-    t.integer  "consort",          limit: 2,  default: 0,     null: false
-    t.integer  "sway",             limit: 2,  default: 0,     null: false
-    t.integer  "insight_xp",       limit: 2,  default: 0,     null: false
-    t.integer  "prowess_xp",       limit: 2,  default: 0,     null: false
-    t.integer  "resolve_xp",       limit: 2,  default: 0,     null: false
-    t.integer  "coin",             limit: 2,  default: 0,     null: false
-    t.integer  "stash",            limit: 2,  default: 0,     null: false
-    t.integer  "load",             limit: 2,  default: 3,     null: false
+    t.integer  "stress",             limit: 2,  default: 0,     null: false
+    t.string   "trauma",             limit: 50, default: "",    null: false
+    t.boolean  "healing_unlocked",              default: false, null: false
+    t.integer  "healing_clock",      limit: 2,  default: 0,     null: false
+    t.boolean  "harm_severe",                   default: false, null: false
+    t.boolean  "harm_moderate1",                default: false, null: false
+    t.boolean  "harm_moderate2",                default: false, null: false
+    t.boolean  "harm_lesser1",                  default: false, null: false
+    t.boolean  "harm_lesser2",                  default: false, null: false
+    t.boolean  "armor_normal",                  default: false, null: false
+    t.boolean  "armor_heavy",                   default: false, null: false
+    t.integer  "playbook_xp",        limit: 2,  default: 0,     null: false
+    t.integer  "hunt",               limit: 2,  default: 0,     null: false
+    t.integer  "study",              limit: 2,  default: 0,     null: false
+    t.integer  "survey",             limit: 2,  default: 0,     null: false
+    t.integer  "tinker",             limit: 2,  default: 0,     null: false
+    t.integer  "finesse",            limit: 2,  default: 0,     null: false
+    t.integer  "prowl",              limit: 2,  default: 0,     null: false
+    t.integer  "skirmish",           limit: 2,  default: 0,     null: false
+    t.integer  "wreck",              limit: 2,  default: 0,     null: false
+    t.integer  "attune",             limit: 2,  default: 0,     null: false
+    t.integer  "command",            limit: 2,  default: 0,     null: false
+    t.integer  "consort",            limit: 2,  default: 0,     null: false
+    t.integer  "sway",               limit: 2,  default: 0,     null: false
+    t.integer  "insight_xp",         limit: 2,  default: 0,     null: false
+    t.integer  "prowess_xp",         limit: 2,  default: 0,     null: false
+    t.integer  "resolve_xp",         limit: 2,  default: 0,     null: false
+    t.integer  "coin",               limit: 2,  default: 0,     null: false
+    t.integer  "stash",              limit: 2,  default: 0,     null: false
+    t.integer  "load",               limit: 2,  default: 3,     null: false
     t.text     "notes"
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+    t.integer  "edit_permission_id"
+    t.integer  "view_permission_id"
+    t.uuid     "game_id",                                       null: false
+    t.index ["edit_permission_id"], name: "index_blades_characters_on_edit_permission_id", using: :btree
+    t.index ["game_id"], name: "index_blades_characters_on_game_id", using: :btree
+    t.index ["view_permission_id"], name: "index_blades_characters_on_view_permission_id", using: :btree
   end
 
   create_table "chats", force: :cascade do |t|
-    t.integer  "player_id",  null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "player_id",     null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "permission_id"
+    t.index ["permission_id"], name: "index_chats_on_permission_id", using: :btree
     t.index ["player_id"], name: "index_chats_on_player_id", using: :btree
   end
 
@@ -102,6 +111,18 @@ ActiveRecord::Schema.define(version: 20170109043146) do
     t.integer  "max_players"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+  end
+
+  create_table "logs", force: :cascade do |t|
+    t.integer  "chat_id",    null: false
+    t.string   "message",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_logs_on_chat_id", using: :btree
+  end
+
+  create_table "permissions", force: :cascade do |t|
+    t.text "value", null: false
   end
 
   create_table "players", force: :cascade do |t|

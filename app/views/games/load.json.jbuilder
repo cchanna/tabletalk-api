@@ -10,6 +10,9 @@ json.chats do
       json.result chat.roll.result
       json.bonus chat.roll.bonus
       json.action 'roll'
+    elsif chat.log
+      json.message chat.log.message
+      json.action 'log'
     end
   end
 end

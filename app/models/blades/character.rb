@@ -27,7 +27,9 @@ class Blades::Character < ApplicationRecord
             numericality: { less_than_or_equal_to: 4 }
   validates :stash, numericality: { less_than_or_equal_to: 40 }
 
-  has_many :blades_character_permissions, foreign_key: :character
+  belongs_to :edit_permission, class_name: :Permission
+  belongs_to :view_permission, class_name: :Permission
+  belongs_to :game
 
   def update_pattern
     {
@@ -73,6 +75,7 @@ class Blades::Character < ApplicationRecord
       },
       health: {
         stress: :stress,
+        trauma: :trauma!,
         healing: {
           unlocked: :healing_unlocked,
           clock: :healing_clock,
@@ -91,86 +94,82 @@ class Blades::Character < ApplicationRecord
       },
       equipment: {
         load: :load
+      },
+      permissions: {
+        edit: :edit_permission!,
+        view: :view_permission!,
       }
     }
   end
 
-  def update_through pattern, with:
-    data = with
-    if pattern.respond_to? :each
-      pattern.each do |key, value|
-        if data.respond_to? :key?
-          if data.key? key
-            update_through value, with: data[key]
-          end
-        end
-      end
-    else
-      method = pattern.to_s + '='
-      if respond_to? method
-        send method, data
-      end
-    end
+  def trauma!
+    return [] unless trauma
+    return trauma.split(" ")
   end
 
-  def get_through pattern
-    data = {}
-    pattern.each do |key, value|
-      if value.respond_to? :each
-        data[key] = get_through value
-      else
-        if respond_to? value
-          data[key] = send value
-        end
-      end
-    end
-    return data
+  def edit_permission!
+    edit_permission.players.map { |player| player.id }
+  end
+
+  def view_permission!
+    view_permission.players.map { |player| player.id }
   end
 
   def update_with data, as:
-    id = as.respond_to?(:id) ? as.id : as
-    permission = Blades::CharacterPermission.find_by player_id: id, character: self
-    return nil unless permission && permission.edit
-    update_through update_pattern, with: data
-    return save
-  end
-
-  def self.update_with data, as:
-    return nil unless data.key? :id
-    character = find_by id: data[:id]
-    return nil unless character
-    return character.update_with data, as: as
-  end
-
-  def self.load player_id
-    data = {}
-    permissions = Blades::CharacterPermission.where player_id: player_id
-    if permissions
-      permissions.each do |permission|
-        if permission.view
-          character = permission.character
-          data[character.id] = character.load_data as: player_id
+    player = as.respond_to?(:id) ? as : Player.find_by(id: as)
+    unless edit_permission.players.include? player
+      return Result.failure "You do not have the required permissions to edit that character", 403
+    end
+    result = update_through update_pattern, with: data
+    return result if result.failed?
+    unless save
+      return Result.failure errors.messages, 400
+    end
+    logs = []
+    if result.value.respond_to? :each
+      result.value.each do |action|
+        chatResult = Chat.log player: player, message: "{player} #{action}", permission: view_permission
+        if chatResult.failed?
+          logger.error 'CHAT FAILED'
+          logger.error chatResult.print_errors
+        else
+          logs.push chatResult.value
         end
       end
     end
-    return data
+    return Result.success Chat.to_json(logs)
+  end
+
+  def self.update_with data, as:
+    unless data.key? :id
+      return Result.failure "Character does not have id", 400
+    end
+    character = find_by id: data[:id]
+    unless character
+      return Result.failure "Could not find character", 404
+    end
+    return character.update_with data, as: as
+  end
+
+  def self.load as:
+    player = as.respond_to?(:id) ? as : Player.find_by(id: as)
+    data = {}
+    characters = where(game: player.game)
+    characters.each do |character|
+      if character.view_permission.players.include? player
+        result = character.load_data as: player
+        data[character.id] = result.value if result.succeeded?
+      end
+    end
+    return Result.success data
   end
 
   def load_data as:
-    player_id = as.respond_to?(:id) ? as.id : as
-    pms = Blades::CharacterPermission.where character: self
-    permission = pms.find_by player_id: player_id
-    return unless permission.view
-    permissions = {}
-    pms.each do |pm|
-      permission = {
-        view: pm.view,
-        edit: pm.edit
-      }
-      permissions[pm.player_id] = permission
+    player = as.respond_to?(:id) ? as : Player.find_by(id: as)
+    unless view_permission.players.include? player
+      return Result.failure "You do not have permission to view this character", 403
     end
     data = get_through update_pattern
-    data[:permissions] = permissions
     data[:strangeFriends] = [
       {
         name: 'Neba Blood (Miss Blood)',
@@ -185,7 +184,6 @@ class Blades::Character < ApplicationRecord
         friend: true
       }
     ]
-    data[:health][:trauma] = ['Cold', 'Haunted']
     data[:specialAbilities] = [
       {
         name: 'Foresight',
@@ -214,6 +212,93 @@ class Blades::Character < ApplicationRecord
         used: true
       }
     ]
+    return Result.success data
+  end
+
+private
+
+
+  def add name, value
+    if name == :trauma!
+      self.trauma = trauma!.push(value.to_s.downcase).join(" ")
+      return Result.success "added the trauma #{value.to_s.upcase} to #{name}"
+    elsif name == :edit_permission! || name == :view_permission!
+      field = name.to_s[0...-1]
+      return self.send(field).add value
+    end
+  end
+
+  def remove name, value
+    if name == :trauma!
+      trauma = trauma!
+      if trauma.delete(value.to_s.downcase)
+        self.trauma = trauma.join(" ")
+        return Result.success "removed the trauma #{value.to_s.upcase} from #{name}"
+      else
+        return Result.failure "Trauma #{value.to_s.upcase} does not exist on character id #{id}", 404
+      end
+    elsif name == :edit_permission! || name == :view_permission!
+      field = name.to_s[0...-1]
+      return self.send(field).remove value
+    end
+  end
+
+  def update_through pattern, with:
+    data = with
+    actions = []
+    if pattern == :id
+      return Result.success []
+    elsif pattern.respond_to? :each
+      pattern.each do |key, value|
+        if data.respond_to? :key?
+          if data.key? key
+            result = update_through value, with: data[key]
+            puts result.failed?
+            return result if result.failed?
+            actions.push *(result.value)
+          end
+        end
+      end
+    else
+      if pattern.to_s[-1] == '!'
+        if data.respond_to? :each
+          data.each do |key, value|
+            result = nil
+            if key == :add
+              result = add pattern, value
+            elsif key == :remove
+              result = remove pattern, value
+            end
+            return result if result.failed?
+            actions.push result.value if result.value
+          end
+        end
+      else
+        method = pattern.to_s + '='
+        from = ""
+        if respond_to? pattern
+          from = " from #{send(pattern).to_s}"
+        end
+        if respond_to? method
+          send method, data
+          actions.push "set #{name}'s #{pattern.to_s.gsub("_"," ").upcase}#{from} to #{data.to_s}"
+        end
+      end
+    end
+    return Result.success actions
+  end
+
+  def get_through pattern
+    data = {}
+    pattern.each do |key, value|
+      if value.respond_to? :each
+        data[key] = get_through value
+      else
+        if respond_to? value
+          data[key] = send value
+        end
+      end
+    end
     return data
   end
 

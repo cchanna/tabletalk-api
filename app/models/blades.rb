@@ -3,9 +3,11 @@ module Blades
     'blades_'
   end
 
-  def self.load player_id
+  def self.load as:
     data = {}
-    data['characters'] = Character.load player_id
-    return data
+    result = Character.load as: as
+    return result if result.failed?
+    data[:characters] = result.value
+    return Result.success data
   end
 end

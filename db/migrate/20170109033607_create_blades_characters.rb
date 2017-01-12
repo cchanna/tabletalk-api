@@ -9,6 +9,7 @@ class CreateBladesCharacters < ActiveRecord::Migration[5.0]
       t.text :background
       t.text :vice
       t.integer :stress, limit: 2, null: false, default: 0
+      t.string :trauma, limit: 50, null: false, default: ""
       t.boolean :healing_unlocked, null: false, default: false
       t.integer :healing_clock, limit: 2, null: false, default: 0
       t.boolean :harm_severe, null: false, default: false

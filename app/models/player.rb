@@ -9,7 +9,7 @@ class Player < ApplicationRecord
 
   def load
     if Game.types[game.game_type] == :blades_in_the_dark
-      return Blades.load id
+      return Blades.load as: self
     end
   end
 end

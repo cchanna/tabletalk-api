@@ -42,5 +42,7 @@ module TabletalkApi
         methods: [:get, :put, :post, :patch, :delete, :options]
       end
     end
+
+    config.autoload_paths << Rails.root.join('app/classes/**/')
   end
 end

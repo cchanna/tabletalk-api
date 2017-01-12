@@ -36,26 +36,27 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
     args = args.deep_symbolize_keys
     return unless args.key? :data
     data = args[:data]
-    newData = {}
-    permitted_players = []
-    if data.key? :character
-      character = data[:character]
-      return unless character.key? :id
-      permissions = CharacterPermission.where character_id: character[:id], view: true
-      permissions.each do |permission|
-        permitted_players.push permission.player_id
-      end
-      if Character.update_with data[:character], as: @player
-        newData[:character] = data[:character]
-      end
-    end
-    return if newData.blank?
     out = {
-      data: newData[:character],
+      data: {},
       player: @player.id,
       action: 'update',
       key: args[:key]
     }
+    permitted_players = []
+    if data.key? :character
+      return unless data[:character].key? :id
+      character = Character.find_by id: data[:character][:id]
+      permitted_players = character.view_permission.players
+      result = character.update_with data[:character], as: @player
+      if result.succeeded?
+        out[:data][:character] = data[:character]
+        out[:logs] = result.value
+      else
+        logger.error 'UPDATE FAILED'
+        logger.error result.print_errors
+        return
+      end
+    end
     broadcast out, to: permitted_players
   end
 end
