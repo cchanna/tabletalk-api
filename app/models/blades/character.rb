@@ -218,18 +218,18 @@ class Blades::Character < ApplicationRecord
 private
 
 
-  def add name, value
-    if name == :trauma!
+  def add key, value
+    if key == :trauma!
       self.trauma = trauma!.push(value.to_s.downcase).join(" ")
       return Result.success "added the trauma #{value.to_s.upcase} to #{name}"
-    elsif name == :edit_permission! || name == :view_permission!
+    elsif key == :edit_permission! || name == :view_permission!
       field = name.to_s[0...-1]
       return self.send(field).add value
     end
   end
 
-  def remove name, value
-    if name == :trauma!
+  def remove key, value
+    if key == :trauma!
       trauma = trauma!
       if trauma.delete(value.to_s.downcase)
         self.trauma = trauma.join(" ")
@@ -237,8 +237,8 @@ private
       else
         return Result.failure "Trauma #{value.to_s.upcase} does not exist on character id #{id}", 404
       end
-    elsif name == :edit_permission! || name == :view_permission!
-      field = name.to_s[0...-1]
+    elsif key == :edit_permission! || key == :view_permission!
+      field = key.to_s[0...-1]
       return self.send(field).remove value
     end
   end
