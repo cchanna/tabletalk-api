@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170112061819) do
+ActiveRecord::Schema.define(version: 20170113043730) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,17 +25,6 @@ ActiveRecord::Schema.define(version: 20170112061819) do
     t.datetime "updated_at",             null: false
     t.index ["uid", "provider"], name: "index_auths_on_uid_and_provider", using: :btree
     t.index ["user_id"], name: "index_auths_on_user_id", using: :btree
-  end
-
-  create_table "blades_character_permissions", force: :cascade do |t|
-    t.integer  "player_id",                    null: false
-    t.integer  "character_id",                 null: false
-    t.boolean  "view",         default: false, null: false
-    t.boolean  "edit",         default: false, null: false
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.index ["character_id"], name: "index_blades_character_permissions_on_character_id", using: :btree
-    t.index ["player_id"], name: "index_blades_character_permissions_on_player_id", using: :btree
   end
 
   create_table "blades_characters", force: :cascade do |t|
