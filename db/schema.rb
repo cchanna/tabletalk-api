@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170113043730) do
+ActiveRecord::Schema.define(version: 20170113050912) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,11 +39,11 @@ ActiveRecord::Schema.define(version: 20170113043730) do
     t.string   "trauma",             limit: 50, default: "",    null: false
     t.boolean  "healing_unlocked",              default: false, null: false
     t.integer  "healing_clock",      limit: 2,  default: 0,     null: false
-    t.boolean  "harm_severe",                   default: false, null: false
-    t.boolean  "harm_moderate1",                default: false, null: false
-    t.boolean  "harm_moderate2",                default: false, null: false
-    t.boolean  "harm_lesser1",                  default: false, null: false
-    t.boolean  "harm_lesser2",                  default: false, null: false
+    t.string   "harm_severe",        limit: 30, default: "",    null: false
+    t.string   "harm_moderate1",     limit: 30, default: "",    null: false
+    t.string   "harm_moderate2",     limit: 30, default: "",    null: false
+    t.string   "harm_lesser1",       limit: 30, default: "",    null: false
+    t.string   "harm_lesser2",       limit: 30, default: "",    null: false
     t.boolean  "armor_normal",                  default: false, null: false
     t.boolean  "armor_heavy",                   default: false, null: false
     t.integer  "playbook_xp",        limit: 2,  default: 0,     null: false

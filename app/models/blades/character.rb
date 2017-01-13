@@ -1,10 +1,11 @@
 class Blades::Character < ApplicationRecord
   validates :name, presence: true
-  validates :healing_unlocked, :harm_severe, :harm_moderate1, :harm_moderate2,
-            :harm_lesser1, :harm_lesser2, :armor_normal, :armor_heavy,
+  validates :healing_unlocked, :armor_normal, :armor_heavy,
             inclusion: { in: [true, false] }
   validates :name, :aka, length: { maximum: 50 }
   validates :playbook, length: { maximum: 20 }
+  validates :harm_severe, :harm_moderate1, :harm_moderate2, :harm_lesser1,
+            :harm_lesser2, length: { maximum: 30 }
   validates :stress, :healing_clock, :playbook_xp, :hunt, :study,
             :survey, :tinker, :finesse, :prowl, :skirmish, :wreck, :attune,
             :command, :consort, :sway, :insight_xp, :prowess_xp, :resolve_xp,
@@ -277,11 +278,11 @@ private
         method = pattern.to_s + '='
         from = ""
         if respond_to? pattern
-          from = " from #{send(pattern).to_s}"
+          from = " from #{send(pattern).inspect.to_s}"
         end
         if respond_to? method
           send method, data
-          actions.push "set #{name}'s #{pattern.to_s.gsub("_"," ").upcase}#{from} to #{data.to_s}"
+          actions.push "set #{name}'s #{pattern.to_s.gsub("_"," ").upcase}#{from} to #{data.inspect.to_s}"
         end
       end
     end
