@@ -31,6 +31,10 @@ class Blades::Character < ApplicationRecord
   belongs_to :edit_permission, class_name: :Permission
   belongs_to :view_permission, class_name: :Permission
   belongs_to :game
+  has_many :armors, class_name: :Armor, foreign_key: :character_id
+
+  def special_armors= data
+  end
 
   def update_pattern
     {
@@ -69,7 +73,7 @@ class Blades::Character < ApplicationRecord
         resolve: {
           xp: :resolve_xp,
           attune: :attune,
-          command: :comand,
+          command: :command,
           consort: :consort,
           sway: :sway
         }
@@ -90,7 +94,8 @@ class Blades::Character < ApplicationRecord
         },
         armor: {
           normal: :armor_normal,
-          heavy: :armor_heavy
+          heavy: :armor_heavy,
+          special: :armors?
         }
       },
       equipment: {
@@ -121,21 +126,23 @@ class Blades::Character < ApplicationRecord
     unless edit_permission.players.include? player
       return Result.failure "You do not have the required permissions to edit that character", 403
     end
-    result = update_through update_pattern, with: data
+    result = update_through update_pattern, with: data, as: as
     return result if result.failed?
     unless save
       return Result.failure errors.messages, 400
     end
     logs = []
-    if result.value.respond_to? :each
-      result.value.each do |action|
-        chatResult = Chat.log player: player, message: "{player} #{action}", permission: view_permission
-        if chatResult.failed?
-          logger.error 'CHAT FAILED'
-          logger.error chatResult.print_errors
-        else
-          logs.push chatResult.value
-        end
+    actions = []
+    if result.value.respond_to? :flatten
+      actions = result.value.flatten
+    end
+    actions.each do |action|
+      chatResult = Chat.log player: player, message: "{player} #{action}", permission: view_permission
+      if chatResult.failed?
+        logger.error 'CHAT FAILED'
+        logger.error chatResult.print_errors
+      else
+        logs.push chatResult.value
       end
     end
     return Result.success Chat.to_json(logs)
@@ -244,7 +251,7 @@ private
     end
   end
 
-  def update_through pattern, with:
+  def update_through pattern, with:, as:
     data = with
     actions = []
     if pattern == :id
@@ -253,8 +260,7 @@ private
       pattern.each do |key, value|
         if data.respond_to? :key?
           if data.key? key
-            result = update_through value, with: data[key]
-            puts result.failed?
+            result = update_through value, with: data[key], as: as
             return result if result.failed?
             actions.push *(result.value)
           end
@@ -274,6 +280,22 @@ private
             actions.push result.value if result.value
           end
         end
+      elsif pattern.to_s[-1] == '?'
+        method = pattern.to_s[0...-1]
+        if respond_to? method
+          array = send method
+          if data.respond_to? :each and array.respond_to? :find_by
+            data.each do |key, value|
+              object = array.find_by(id: key.to_s)
+              if object.respond_to? :update_with
+                result = object.update_with value, as: as
+                return result if result.failed?
+                actions.push result.value
+                puts result.inspect
+              end
+            end
+          end
+        end
       else
         method = pattern.to_s + '='
         from = ""
@@ -282,7 +304,7 @@ private
         end
         if respond_to? method
           send method, data
-          actions.push "set #{name}'s #{pattern.to_s.gsub("_"," ").upcase}#{from} to #{data.inspect.to_s}"
+          actions.push "set #{name}'s #{pattern.to_s.gsub("_"," ").downcase}#{from} to #{data.inspect.to_s}"
         end
       end
     end
@@ -295,8 +317,22 @@ private
       if value.respond_to? :each
         data[key] = get_through value
       else
-        if respond_to? value
-          data[key] = send value
+        method = value.to_s
+        if method[-1] == '?'
+          data[key] = {}
+          method = method[0...-1]
+          if respond_to? method
+            array = send method
+            if array.respond_to? :each
+              array.each do |object|
+                if object.respond_to? :id and object.respond_to? :to_json
+                  data[key][object.id] = object.to_json
+                end
+              end
+            end
+          end
+        elsif respond_to? method
+          data[key] = send method
         end
       end
     end
