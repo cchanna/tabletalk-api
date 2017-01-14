@@ -99,18 +99,24 @@ class Blades::Character < ApplicationRecord
         }
       },
       equipment: {
-        load: :load
+        load: :load,
+        items: :items?
       },
       permissions: {
         edit: :edit_permission!,
         view: :view_permission!,
-      }
+      },
+      specialAbilities: :special_abilities!
     }
   end
 
   def trauma!
     return [] unless trauma
     return trauma.split(" ")
+  end
+
+  def special_abilities!
+    return special_abilities
   end
 
   def edit_permission!
@@ -190,34 +196,6 @@ class Blades::Character < ApplicationRecord
         position: 'cat-burglar',
         description: 'Narri/Whisper. Notorious. Hiding out in the Tin Quarter.',
         friend: true
-      }
-    ]
-    data[:specialAbilities] = [
-      {
-        name: 'Foresight',
-        description: 'Three times per score you can assist another rogue without paying stress. Tell us how you prepared them for the situation',
-      }
-    ]
-    data[:equipment][:items] = [
-      {
-        name: 'A blade or two',
-        load: 1,
-        used: false
-      },
-      {
-        name: 'Throwing Knives',
-        load: 1,
-        used: true
-      },
-      {
-        name: 'A Large Weapon',
-        load: 2,
-        used: false
-      },
-      {
-        name: 'Fine cover identity',
-        load: 0,
-        used: true
       }
     ]
     return Result.success data
