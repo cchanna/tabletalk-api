@@ -100,7 +100,7 @@ class Blades::Character < ApplicationRecord
       },
       equipment: {
         load: :load,
-        items: :items?
+        items: :items!
       },
       permissions: {
         edit: :edit_permission!,
@@ -117,6 +117,10 @@ class Blades::Character < ApplicationRecord
 
   def special_abilities!
     return special_abilities
+  end
+
+  def items!
+    return items
   end
 
   def edit_permission!
@@ -205,17 +209,19 @@ private
 
 
   def add key, value
-    if key == :trauma!
+    field = key.to_s[0...-1]
+    if field == :trauma
       self.trauma = trauma!.push(value.to_s.downcase).join(" ")
       return Result.success "added the trauma #{value.to_s.upcase} to #{name}"
-    elsif key == :edit_permission! || name == :view_permission!
-      field = name.to_s[0...-1]
-      return self.send(field).add value
+    else
+      self.send(field).push value
+      return Result.success "added #{value.inspect} to #{name}'s #{field.downcase}'"
     end
   end
 
   def remove key, value
-    if key == :trauma!
+    field = key.to_s[0...-1]
+    if field == :trauma
       trauma = trauma!
       if trauma.delete(value.to_s.downcase)
         self.trauma = trauma.join(" ")
@@ -223,9 +229,17 @@ private
       else
         return Result.failure "Trauma #{value.to_s.upcase} does not exist on character id #{id}", 404
       end
-    elsif key == :edit_permission! || key == :view_permission!
-      field = key.to_s[0...-1]
-      return self.send(field).remove value
+    else
+      if value == "all"
+        self.send(field).clear
+        return Result.success "reset #{name}'s #{field.downcase}"
+      else
+        if self.send(field).delete value
+          return Result.success "removed #{value.inspect} from #{name}'s #{field.downcase}"
+        else
+          return Result.failure "The #{field.downcase} #{value.inspect} does not exist on character id #{id}", 404
+        end
+      end
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170114221922) do
+ActiveRecord::Schema.define(version: 20170114230038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(version: 20170114221922) do
     t.integer  "view_permission_id"
     t.uuid     "game_id",                                       null: false
     t.text     "special_abilities",             default: [],    null: false, array: true
+    t.text     "items",                         default: [],    null: false, array: true
     t.index ["edit_permission_id"], name: "index_blades_characters_on_edit_permission_id", using: :btree
     t.index ["game_id"], name: "index_blades_characters_on_game_id", using: :btree
     t.index ["view_permission_id"], name: "index_blades_characters_on_view_permission_id", using: :btree
