@@ -13,7 +13,7 @@ class Blades::Armor < ApplicationRecord
     if data == nil
       action = "deleted #{character.name}'s special armor #{self.name.inspect}"
       self.destroy
-      actions.push action 
+      actions.push action
     elsif data.respond_to? :key?
       if data.key? :name
         original = self.name

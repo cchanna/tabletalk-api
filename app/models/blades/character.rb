@@ -32,6 +32,7 @@ class Blades::Character < ApplicationRecord
   belongs_to :view_permission, class_name: :Permission
   belongs_to :game
   has_many :armors, class_name: :Armor, foreign_key: :character_id
+  has_many :strange_friends
 
   def special_armors= data
   end
@@ -106,7 +107,8 @@ class Blades::Character < ApplicationRecord
         edit: :edit_permission!,
         view: :view_permission!,
       },
-      specialAbilities: :special_abilities!
+      specialAbilities: :special_abilities!,
+      strangeFriends: :strange_friends?
     }
   end
 
@@ -188,20 +190,6 @@ class Blades::Character < ApplicationRecord
       return Result.failure "You do not have permission to view this character", 403
     end
     data = get_through update_pattern
-    data[:strangeFriends] = [
-      {
-        name: 'Neba Blood (Miss Blood)',
-        position: 'Jack of Hearts',
-        description: 'A former friend (former lover). Etoli.',
-        friend: false
-      },
-      {
-        name: 'Zopheea',
-        position: 'cat-burglar',
-        description: 'Narri/Whisper. Notorious. Hiding out in the Tin Quarter.',
-        friend: true
-      }
-    ]
     return Result.success data
   end
 
