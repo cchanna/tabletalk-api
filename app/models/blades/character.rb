@@ -283,7 +283,6 @@ private
                 result = object.update_with value, as: as
                 return result if result.failed?
                 actions.push result.value
-                puts result.inspect
               end
             end
           end

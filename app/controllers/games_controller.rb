@@ -43,7 +43,6 @@ class GamesController < ApplicationController
     return not_found unless player
     result = player.load
     @data = result.value if result.succeeded?
-    puts result.inspect
     @chats = Chat.order(created_at: :desc).where(player: @game.players).limit(100).reverse
     @me = player.id
   end
