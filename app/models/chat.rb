@@ -34,14 +34,10 @@ class Chat < ApplicationRecord
 
   def self.log(player:, message:, permission:)
     chat = Chat.new player: player, permission: permission
-    unless chat.save
-      return Result.failure chat.errors.messages.to_s
-    end
+    chat.save!
     chat.log = Log.new chat: chat, message: message
-    unless chat.log.save
-      return Result.failure chat.errors.messages.to_s
-    end
-    return Result.success chat
+    chat.log.save!
+    chat.log.broadcast
   end
 
   def self.to_json chats

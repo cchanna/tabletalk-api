@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170117032539) do
+ActiveRecord::Schema.define(version: 20170122222143) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20170117032539) do
     t.integer  "character_id",                            null: false
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
+    t.index ["character_id", "name"], name: "index_blades_armors_on_character_id_and_name", unique: true, using: :btree
     t.index ["character_id"], name: "index_blades_armors_on_character_id", using: :btree
   end
 
@@ -45,7 +46,6 @@ ActiveRecord::Schema.define(version: 20170117032539) do
     t.text     "background"
     t.text     "vice"
     t.integer  "stress",             limit: 2,  default: 0,     null: false
-    t.string   "trauma",             limit: 50, default: "",    null: false
     t.boolean  "healing_unlocked",              default: false, null: false
     t.integer  "healing_clock",      limit: 2,  default: 0,     null: false
     t.string   "harm_severe",        limit: 30, default: "",    null: false
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 20170117032539) do
     t.uuid     "game_id",                                       null: false
     t.text     "special_abilities",             default: [],    null: false, array: true
     t.text     "items",                         default: [],    null: false, array: true
+    t.string   "trauma",                        default: [],    null: false, array: true
     t.index ["edit_permission_id"], name: "index_blades_characters_on_edit_permission_id", using: :btree
     t.index ["game_id"], name: "index_blades_characters_on_game_id", using: :btree
     t.index ["view_permission_id"], name: "index_blades_characters_on_view_permission_id", using: :btree

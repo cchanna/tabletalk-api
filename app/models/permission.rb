@@ -56,4 +56,12 @@ class Permission < ApplicationRecord
     end
     return Result.success
   end
+
+  def to_json
+    players.map {|p| p.id}
+  end
+
+  def broadcast data
+    ApplicationCable::Channel.broadcast data, to: players
+  end
 end

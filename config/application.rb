@@ -44,5 +44,6 @@ module TabletalkApi
     end
 
     config.autoload_paths << Rails.root.join('app/classes/**/')
+    config.autoload_paths << Rails.root.join('app/messengers/**/')
   end
 end

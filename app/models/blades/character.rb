@@ -34,143 +34,6 @@ class Blades::Character < ApplicationRecord
   has_many :armors, class_name: :Armor, foreign_key: :character_id
   has_many :strange_friends
 
-  def special_armors= data
-  end
-
-  def update_pattern
-    {
-      id: :id,
-      names: {
-        name: :name,
-        playbook: :playbook,
-        alias: :aka
-      },
-      details: {
-        look: :look,
-        heritage: :heritage,
-        background: :background,
-        vice: :vice
-      },
-      stats: {
-        xp: :playbook_xp,
-        money: {
-          coin: :coin,
-          stash: :stash
-        },
-        insight: {
-          xp: :insight_xp,
-          hunt: :hunt,
-          study: :study,
-          survey: :survey,
-          tinker: :tinker
-        },
-        prowess: {
-          xp: :prowess_xp,
-          finesse: :finesse,
-          prowl: :prowl,
-          skirmish: :skirmish,
-          wreck: :wreck
-        },
-        resolve: {
-          xp: :resolve_xp,
-          attune: :attune,
-          command: :command,
-          consort: :consort,
-          sway: :sway
-        }
-      },
-      health: {
-        stress: :stress,
-        trauma: :trauma!,
-        healing: {
-          unlocked: :healing_unlocked,
-          clock: :healing_clock,
-        },
-        harm: {
-          severe: :harm_severe,
-          moderate1: :harm_moderate1,
-          moderate2: :harm_moderate2,
-          lesser1: :harm_lesser1,
-          lesser2: :harm_lesser2
-        },
-        armor: {
-          normal: :armor_normal,
-          heavy: :armor_heavy,
-          special: :armors?
-        }
-      },
-      equipment: {
-        load: :load,
-        items: :items!
-      },
-      permissions: {
-        edit: :edit_permission!,
-        view: :view_permission!,
-      },
-      specialAbilities: :special_abilities!,
-      strangeFriends: :strange_friends?
-    }
-  end
-
-  def trauma!
-    return [] unless trauma
-    return trauma.split(" ")
-  end
-
-  def special_abilities!
-    return special_abilities
-  end
-
-  def items!
-    return items
-  end
-
-  def edit_permission!
-    edit_permission.players.map { |player| player.id }
-  end
-
-  def view_permission!
-    view_permission.players.map { |player| player.id }
-  end
-
-  def update_with data, as:
-    player = as.respond_to?(:id) ? as : Player.find_by(id: as)
-    unless edit_permission.players.include? player
-      return Result.failure "You do not have the required permissions to edit that character", 403
-    end
-    result = update_through update_pattern, with: data, as: as
-    return result if result.failed?
-    unless save
-      return Result.failure errors.messages, 400
-    end
-    logs = []
-    actions = []
-    if result.value.respond_to? :flatten
-      actions = result.value.flatten
-    end
-    actions.each do |action|
-      chatResult = Chat.log player: player, message: "{player} #{action}", permission: view_permission
-      if chatResult.failed?
-        logger.error 'CHAT FAILED'
-        logger.error chatResult.print_errors
-      else
-        logs.push chatResult.value
-      end
-    end
-    return Result.success Chat.to_json(logs)
-  end
-
-  def self.update_with data, as:
-    unless data.key? :id
-      return Result.failure "Character does not have id", 400
-    end
-    character = find_by id: data[:id]
-    unless character
-      return Result.failure "Could not find character", 404
-    end
-    return character.update_with data, as: as
-  end
-
   def self.load as:
     player = as.respond_to?(:id) ? as : Player.find_by(id: as)
     data = {}
@@ -184,138 +47,335 @@ class Blades::Character < ApplicationRecord
     return Result.success data
   end
 
+  def self.do(args, key:, as:)
+    action = args[:action].parameterize.underscore.to_sym
+    case action
+    when :create
+    else
+      id = args[:id]
+      character = find_by id: id
+      character.do action, with: args[:value], key: key, as: as
+    end
+  end
+
   def load_data as:
     player = as.respond_to?(:id) ? as : Player.find_by(id: as)
     unless view_permission.players.include? player
       return Result.failure "You do not have permission to view this character", 403
     end
-    data = get_through update_pattern
+    data = to_json
     return Result.success data
   end
 
-private
+  def broadcast data
+    data[:id] = id
+    view_permission.broadcast({
+      key: @key,
+      action: "do",
+      what: :character,
+      data: data
+    })
+  end
 
+  def log message
+    if @player
+      Chat.log player: @player, message: message, permission: view_permission
+    end
+  end
 
-  def add key, value
-    field = key.to_s[0...-1]
-    if field == :trauma
-      self.trauma = trauma!.push(value.to_s.downcase).join(" ")
-      return Result.success "added the trauma #{value.to_s.upcase} to #{name}"
+  def edit_actions
+    [
+      :increment_coin, :decrement_coin, :transfer_to_coin, :transfer_to_stash,
+      :increment_xp, :decrement_xp, :advance_action,
+      :increment_stress, :decrement_stress, :add_trauma,
+      :edit_harm, :use_armor,
+      :unlock_healing, :increment_healing, :decrement_healing,
+      :use_item, :clear_item, :clear_items, :set_load
+    ]
+  end
+
+  def increment_coin
+    return unless coin < 4
+    update coin: coin + 1
+    broadcast action: :increment_coin
+    log "#{name} earned a coin (#{self.coin})"
+  end
+
+  def decrement_coin
+    return unless coin > 0
+    update coin: coin - 1
+    broadcast action: :decrement_coin
+    log "#{name} spent a coin (#{self.coin})"
+  end
+
+  def transfer_to_stash
+    return unless stash < 40 and coin > 0
+    update stash: stash + 1, coin: coin - 1
+    broadcast action: :transfer_to_stash
+    log "#{name} stashed a coin (#{self.stash})"
+  end
+
+  def transfer_to_coin
+    return unless stash >= 2 and coin < 4
+    update stash: stash - 2, coin: coin + 1
+    broadcast action: :transfer_to_coin
+    log "#{name} withdrew from their stash (#{self.stash})"
+  end
+
+  def increment_xp stat
+    prop = stat.to_s.parameterize.underscore + '_xp'
+    value = send prop
+    if (stat == "playbook")
+      return unless value < 8
     else
-      self.send(field).push value
-      return Result.success "added #{value.inspect} to #{name}'s #{field.downcase}'"
+      return unless value < 6
     end
+    update prop => value + 1
+    broadcast action: :increment_xp, value: stat
+    log "#{name} raised their #{stat.to_s.downcase} XP to #{value + 1}"
   end
 
-  def remove key, value
-    field = key.to_s[0...-1]
-    if field == :trauma
-      trauma = trauma!
-      if trauma.delete(value.to_s.downcase)
-        self.trauma = trauma.join(" ")
-        return Result.success "removed the trauma #{value.to_s.upcase} from #{name}"
-      else
-        return Result.failure "Trauma #{value.to_s.upcase} does not exist on character id #{id}", 404
+  def decrement_xp stat
+    prop = stat.to_s.parameterize.underscore + '_xp'
+    value = send prop
+    return unless value > 0
+    update prop => value - 1
+    broadcast action: :decrement_xo, value: stat
+    log "#{name} lowered their #{stat.to_s.downcase} XP to #{value - 1}"
+  end
+
+  def advance_action action
+    legal_actions = {
+      hunt: :insight, study: :insight, survey: :insight, tinker: :insight,
+      finesse: :prowess, prowl: :prowess, skirmish: :prowess, wreck: :prowess,
+      attune: :resolve, command: :resolve, consort: :resolve, sway: :resolve
+    }
+    prop = action.to_s.parameterize.underscore.to_sym
+    puts prop.inspect
+    return unless legal_actions.include? prop
+    value = send prop
+    xp_prop = (legal_actions[prop].to_s + '_xp').to_sym
+    xp = send xp_prop
+    return unless value < 4
+    return if xp_prop == :playbook and xp < 8
+    return unless xp >= 6
+    update prop => value + 1, xp_prop => 0
+    broadcast action: :advance_action, value: action
+    log "#{name} raised their #{prop.to_s} to #{value + 1}"
+  end
+
+  def increment_stress
+    return unless stress < 9
+    update stress: stress + 1
+    broadcast action: :increment_stress
+    log "#{name} raised their stress to #{stress}"
+  end
+
+  def decrement_stress
+    return unless stress > 0
+    update stress: stress - 1
+    broadcast action: :decrement_stress
+    log "#{name} lowered their stress to #{stress}"
+  end
+
+  def add_trauma value
+    return unless stress == 9
+    update stress: 0, trauma: trauma.push(value.to_s.downcase)
+    broadcast action: :add_trauma, value: value.to_s.downcase
+    log "#{name} gained the trauma \"#{value.to_s.upcase}\""
+  end
+
+  def edit_harm value
+    harm = value[:harm].to_s.downcase
+    text = value[:text].to_s.downcase
+    prop = ("harm_" + harm).parameterize.underscore.to_sym
+    current_value = send prop
+    level = "severe"
+    if harm.include? "moderate"
+      level = "moderate"
+    elsif harm.include? "lesser"
+      level = "lesser"
+    end
+    if current_value.blank? and !text.blank?
+      update healing_unlocked: false
+      log "#{name} suffered the #{level} harm \"#{text.upcase}\""
+    elsif !current_value.blank? and text.blank?
+      log "#{name} healed their #{level} harm \"#{current_value.upcase}\""
+    elsif !current_value.blank? and !text.blank?
+      log "#{name}'s #{level} harm \"#{current_value.upcase} was renamed to \"#{text.upcase}\""
+    end
+    update prop => text
+    broadcast action: :edit_harm, value: {harm: harm, text: text}
+  end
+
+  def use_armor value
+    armor_name = value[:name].downcase
+    used = value[:used]
+    action = used ? "used" : "refreshed"
+    if armor_name == "armor"
+      if armor_normal != used
+        update armor_normal: used
+        if !used
+          update armor_heavy: false
+        end
+        log "#{name} #{action} their armor"
+        broadcast action: :use_armor, value: {name: "armor", used: used}
+      end
+    elsif armor_name == "heavy"
+      if armor_heavy != used
+        update armor_heavy: used
+        log "#{name} #{action} their heavy armor"
+        broadcast action: :use_armor, value: {name: "heavy", used: used}
       end
     else
-      if value == "all"
-        self.send(field).clear
-        return Result.success "reset #{name}'s #{field.downcase}"
-      else
-        if self.send(field).delete value
-          return Result.success "removed #{value.inspect} from #{name}'s #{field.downcase}"
-        else
-          return Result.failure "The #{field.downcase} #{value.inspect} does not exist on character id #{id}", 404
-        end
+      armor = armors.find_by name: armor_name
+      if armor and armor.used != used
+        armor.update used: used
+        log "#{name} #{action} their special armor \"#{armor.name.upcase}\""
+        broadcast action: :use_armor, value: {name: name, used: used}
       end
     end
   end
 
-  def update_through pattern, with:, as:
-    data = with
-    actions = []
-    if pattern == :id
-      return Result.success []
-    elsif pattern.respond_to? :each
-      pattern.each do |key, value|
-        if data.respond_to? :key?
-          if data.key? key
-            result = update_through value, with: data[key], as: as
-            return result if result.failed?
-            actions.push *(result.value)
-          end
-        end
-      end
+  def unlock_healing value
+    return unless healing_unlocked != value
+    update healing_unlocked: value
+    action = ""
+    if value
+      action = "unlocked"
     else
-      if pattern.to_s[-1] == '!'
-        if data.respond_to? :each
-          data.each do |key, value|
-            result = nil
-            if key == :add
-              result = add pattern, value
-            elsif key == :remove
-              result = remove pattern, value
-            end
-            return result if result.failed?
-            actions.push result.value if result.value
-          end
-        end
-      elsif pattern.to_s[-1] == '?'
-        method = pattern.to_s[0...-1]
-        if respond_to? method
-          array = send method
-          if data.respond_to? :each and array.respond_to? :find_by
-            data.each do |key, value|
-              object = array.find_by(id: key.to_s)
-              if object.respond_to? :update_with
-                result = object.update_with value, as: as
-                return result if result.failed?
-                actions.push result.value
-              end
-            end
-          end
-        end
-      else
-        method = pattern.to_s + '='
-        from = ""
-        if respond_to? pattern
-          from = " from #{send(pattern).inspect.to_s}"
-        end
-        if respond_to? method
-          send method, data
-          actions.push "set #{name}'s #{pattern.to_s.gsub("_"," ").downcase}#{from} to #{data.inspect.to_s}"
-        end
-      end
+      action = "locked"
     end
-    return Result.success actions
+    log "#{name} #{action} their healing clock"
+    broadcast action: :unlock_healing, value: value
   end
 
-  def get_through pattern
-    data = {}
-    pattern.each do |key, value|
-      if value.respond_to? :each
-        data[key] = get_through value
-      else
-        method = value.to_s
-        if method[-1] == '?'
-          data[key] = {}
-          method = method[0...-1]
-          if respond_to? method
-            array = send method
-            if array.respond_to? :each
-              array.each do |object|
-                if object.respond_to? :id and object.respond_to? :to_json
-                  data[key][object.id] = object.to_json
-                end
-              end
-            end
-          end
-        elsif respond_to? method
-          data[key] = send method
-        end
-      end
+  def increment_healing
+    return unless healing_unlocked
+    if healing_clock < 8
+      update healing_clock: healing_clock + 1
+      broadcast action: :increment_healing
+      log "#{name} advanced their healing clock to #{healing_clock}"
+    else
+      update healing_clock: 0, harm_severe: "", harm_moderate1: "",
+             harm_moderate2: "", harm_lesser1: "", harm_lesser2: "",
+             healing_unlocked: false
+      broadcast action: :increment_healing
+      log "#{name} healed their wounds"
     end
-    return data
   end
 
+  def decrement_healing
+    return unless healing_unlocked and healing_clock > 0
+    update healing_clock: healing_clock - 1
+    broadcast action: :decrement_healing
+    log "#{name} reduced their healing clock to #{healing_clock}"
+  end
+
+  def use_item value
+    return if items.include? value
+    items.push value
+    if value == "+Heavy" and !items.include? "Armor"
+      items.push "Armor"
+    end
+    save!
+    broadcast action: :use_item, value: value
+    log "#{name} used the item \"#{value}\""
+  end
+
+  def clear_item value
+    return unless items.include? value
+    items.delete value
+    if value == "Armor"
+      items.delete "+Heavy"
+      update armor_normal: false, armor_heavy: false
+    elsif value == "+Heavy"
+      update armor_heavy: false
+    end
+    save!
+    broadcast action: :clear_item, value: value
+    log "#{name} returned the item \"#{value}\""
+  end
+
+  def clear_items
+    update items: [], armor_normal: false, armor_heavy: false, load: 0
+    armors.each do |a|
+      a.update used: false
+    end
+    broadcast action: :clear_items
+    log "#{name} reset their loadout"
+  end
+
+  def set_load value
+    return if value == load
+    update load: value
+    broadcast action: :set_load, value: value
+    load_name = load.to_s
+    load_name = "heavy".inspect if load == 6
+    load_name = "normal".inspect if load == 5
+    load_name = "light".inspect if load == 3
+    log "#{name} set their load to #{load_name}"
+  end
+
+  def do(action, with:nil, key:, as:)
+    @player = as.respond_to?(:id) ? as : Player.find_by(id: as)
+    @key = key
+    if edit_actions.include? action
+      return unless edit_permission.players.include? @player
+      if with == nil
+        self.send action
+      else
+        self.send action, with
+      end
+    end
+  end
+
+  def to_json
+    return {
+      id: id,
+      name: name,
+      playbook: playbook,
+      alias: aka,
+      look: look,
+      heritage: heritage,
+      background: background,
+      vice: vice,
+      playbookXP: playbook_xp,
+      coin: coin,
+      stash: stash,
+      insightXP: insight_xp,
+      hunt: hunt,
+      study: study,
+      survey: survey,
+      tinker: tinker,
+      prowessXP: prowess_xp,
+      finesse: finesse,
+      prowl: prowl,
+      skirmish: skirmish,
+      wreck: wreck,
+      resolveXP: resolve_xp,
+      attune: attune,
+      command: command,
+      consort: consort,
+      sway: sway,
+      stress: stress,
+      trauma: trauma,
+      healingUnlocked: healing_unlocked,
+      healingClock: healing_clock,
+      harmSevere: harm_severe,
+      harmModerate1: harm_moderate1,
+      harmModerate2: harm_moderate2,
+      harmLesser1: harm_lesser1,
+      harmLesser2: harm_lesser2,
+      armor: armor_normal,
+      heavyArmor: armor_heavy,
+      specialArmor: armors.map {|a| a.to_json},
+      load: load,
+      items: items,
+      editPermission: edit_permission.to_json,
+      viewPermission: view_permission.to_json,
+      specialAbilities: special_abilities,
+      strangeFriends: strange_friends.map {|sf| sf.to_json}
+    }
+  end
 end

@@ -1,5 +1,7 @@
 class Blades::Armor < ApplicationRecord
-  validates :name, presence: true, length: {maximum: 20}
+  validates :name, presence: true, length: {maximum: 20},
+                   uniqueness: {scope: :character_id},
+                   exclusion: { in: ["heavy", "armor"]}
   validates :used, inclusion: { in: [true, false] }
 
   belongs_to :character, class_name: :Character

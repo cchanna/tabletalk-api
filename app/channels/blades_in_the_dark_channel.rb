@@ -32,6 +32,16 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
     broadcast out
   end
 
+
+  def do args
+    args = args.deep_symbolize_keys
+    what = args[:what].parameterize.underscore.to_sym
+    case what
+    when :character
+      Blades::Character.do args[:data], key: args[:key], as: @player
+    end
+  end
+
   def update args
     args = args.deep_symbolize_keys
     return unless args.key? :data
@@ -50,7 +60,6 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
       result = character.update_with data[:character], as: @player
       if result.succeeded?
         out[:data][:character] = data[:character]
-        out[:logs] = result.value
       else
         logger.error 'UPDATE FAILED'
         logger.error result.print_errors
