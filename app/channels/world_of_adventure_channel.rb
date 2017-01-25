@@ -11,7 +11,7 @@ class WorldOfAdventureChannel < ApplicationCable::Channel
     chat = Chat.roll player: @player, dice: dice, bonus: bonus
     out = {
       id: chat.id,
-      action: Chat.actions[:roll],
+      action: 'roll',
       player: @player.id,
       bonus: bonus,
       result: chat.roll.result,

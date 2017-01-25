@@ -9,5 +9,6 @@ class Player < ApplicationRecord
     if Game.types[game.game_type] == :blades_in_the_dark
       return Blades.load as: self
     end
+    return Result.failure "nothing to load"
   end
 end
