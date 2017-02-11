@@ -31,7 +31,7 @@ class Blades::Character < ApplicationRecord
   belongs_to :edit_permission, class_name: :Permission
   belongs_to :view_permission, class_name: :Permission
   belongs_to :game
-  has_many :strange_friends
+  has_many :strange_friends, dependent: :destroy
 
   def self.load as:
     player = as.respond_to?(:id) ? as : Player.find_by(id: as)
@@ -297,7 +297,7 @@ class Blades::Character < ApplicationRecord
 
   def clear_items
     update items: [], load: 0,
-           armor_normal: false, armor_heavy: false, armor_special: false 
+           armor_normal: false, armor_heavy: false, armor_special: false
     broadcast action: :clear_items
     log "#{name} reset their loadout"
   end

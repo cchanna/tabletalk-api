@@ -6,7 +6,7 @@ class Game < ApplicationRecord
     ]
   end
 
-  has_many :players
+  has_many :players, dependent: :destroy
   has_many :users, through: :players
   validates :name, presence: true, length: { maximum: 25}
   validates :game_type, presence: true, numericality: {

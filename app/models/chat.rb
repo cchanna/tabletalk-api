@@ -1,9 +1,9 @@
 class Chat < ApplicationRecord
   belongs_to :player
   belongs_to :permission
-  has_one :talk
-  has_one :roll
-  has_one :log
+  has_one :talk, dependent: :destroy
+  has_one :roll, dependent: :destroy
+  has_one :log, dependent: :destroy
 
   def self.roll(args)
     player = args[:player]

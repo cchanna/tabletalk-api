@@ -1,6 +1,6 @@
 class Roll < ApplicationRecord
   belongs_to :chat
-  has_many :dice
+  has_many :dice, dependent: :destroy
   validates :bonus, presence: true, numericality: {only_integer: true}
 
   def self.roll(args)

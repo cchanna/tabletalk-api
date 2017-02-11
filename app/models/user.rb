@@ -1,6 +1,6 @@
 class User < ApplicationRecord
-  has_many :auths
-  has_many :players
+  has_many :auths, dependent: :destroy
+  has_many :players, dependent: :destroy
   has_many :games, through: :players
   belongs_to :primary_auth, class_name: 'Auth'
   def self.login(token, provider)
