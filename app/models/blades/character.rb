@@ -31,7 +31,6 @@ class Blades::Character < ApplicationRecord
   belongs_to :edit_permission, class_name: :Permission
   belongs_to :view_permission, class_name: :Permission
   belongs_to :game
-  has_many :armors, class_name: :Armor, foreign_key: :character_id
   has_many :strange_friends
 
   def self.load as:
@@ -227,12 +226,11 @@ class Blades::Character < ApplicationRecord
         log "#{name} #{action} their heavy armor"
         broadcast action: :use_armor, value: {name: "heavy", used: used}
       end
-    else
-      armor = armors.find_by name: armor_name
-      if armor and armor.used != used
-        armor.update used: used
-        log "#{name} #{action} their special armor \"#{armor.name.upcase}\""
-        broadcast action: :use_armor, value: {name: name, used: used}
+    elsif armor_name == "special"
+      if armor_special != used
+        update armor_special: used
+        log "#{name} #{action} their special armor"
+        broadcast action: :use_armor, value: {name: "special", used: used}
       end
     end
   end
@@ -252,7 +250,7 @@ class Blades::Character < ApplicationRecord
 
   def increment_healing
     return unless healing_unlocked
-    if healing_clock < 8
+    if healing_clock < 4
       update healing_clock: healing_clock + 1
       broadcast action: :increment_healing
       log "#{name} advanced their healing clock to #{healing_clock}"
@@ -298,10 +296,8 @@ class Blades::Character < ApplicationRecord
   end
 
   def clear_items
-    update items: [], armor_normal: false, armor_heavy: false, load: 0
-    armors.each do |a|
-      a.update used: false
-    end
+    update items: [], load: 0,
+           armor_normal: false, armor_heavy: false, armor_special: false 
     broadcast action: :clear_items
     log "#{name} reset their loadout"
   end
@@ -369,7 +365,7 @@ class Blades::Character < ApplicationRecord
       harmLesser2: harm_lesser2,
       armor: armor_normal,
       heavyArmor: armor_heavy,
-      specialArmor: armors.map {|a| a.to_json},
+      specialArmor: armor_special,
       load: load,
       items: items,
       editPermission: edit_permission.to_json,

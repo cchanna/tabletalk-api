@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170122222143) do
+ActiveRecord::Schema.define(version: 20170205055326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,16 +25,6 @@ ActiveRecord::Schema.define(version: 20170122222143) do
     t.datetime "updated_at",             null: false
     t.index ["uid", "provider"], name: "index_auths_on_uid_and_provider", using: :btree
     t.index ["user_id"], name: "index_auths_on_user_id", using: :btree
-  end
-
-  create_table "blades_armors", force: :cascade do |t|
-    t.string   "name",         limit: 20,                 null: false
-    t.boolean  "used",                    default: false, null: false
-    t.integer  "character_id",                            null: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-    t.index ["character_id", "name"], name: "index_blades_armors_on_character_id_and_name", unique: true, using: :btree
-    t.index ["character_id"], name: "index_blades_armors_on_character_id", using: :btree
   end
 
   create_table "blades_characters", force: :cascade do |t|
@@ -83,6 +73,7 @@ ActiveRecord::Schema.define(version: 20170122222143) do
     t.text     "special_abilities",             default: [],    null: false, array: true
     t.text     "items",                         default: [],    null: false, array: true
     t.string   "trauma",                        default: [],    null: false, array: true
+    t.boolean  "armor_special",                 default: false, null: false
     t.index ["edit_permission_id"], name: "index_blades_characters_on_edit_permission_id", using: :btree
     t.index ["game_id"], name: "index_blades_characters_on_game_id", using: :btree
     t.index ["view_permission_id"], name: "index_blades_characters_on_view_permission_id", using: :btree
