@@ -255,7 +255,7 @@ class Blades::Character < ApplicationRecord
       broadcast action: :increment_healing
       log "#{name} advanced their healing clock to #{healing_clock}"
     else
-      update healing_clock: 0, harm_severe: "", harm_moderate1: "",
+      update healing_clock: vigor, harm_severe: "", harm_moderate1: "",
              harm_moderate2: "", harm_lesser1: "", harm_lesser2: "",
              healing_unlocked: false
       broadcast action: :increment_healing
@@ -264,7 +264,7 @@ class Blades::Character < ApplicationRecord
   end
 
   def decrement_healing
-    return unless healing_unlocked and healing_clock > 0
+    return unless healing_unlocked and healing_clock > vigor
     update healing_clock: healing_clock - 1
     broadcast action: :decrement_healing
     log "#{name} reduced their healing clock to #{healing_clock}"
@@ -307,10 +307,15 @@ class Blades::Character < ApplicationRecord
     update load: value
     broadcast action: :set_load, value: value
     load_name = load.to_s
-    load_name = "heavy".inspect if load == 6
-    load_name = "normal".inspect if load == 5
-    load_name = "light".inspect if load == 3
-    log "#{name} set their load to #{load_name}"
+    if load == 6 + load_bonus
+      log "#{name} is using a heavy load"
+    elsif load == 5 + load_bonus
+      log "#{name} is using a normal load"
+    elsif load == 3 + load_bonus
+      log "#{name} is using a light load"
+    else
+      log "#{name} is using a load of #{load}"
+    end
   end
 
   def do(action, with:nil, key:, as:)
@@ -370,8 +375,34 @@ class Blades::Character < ApplicationRecord
       items: items,
       editPermission: edit_permission.to_json,
       viewPermission: view_permission.to_json,
-      specialAbilities: special_abilities,
+      specialAbilities: special_abilities.sort{ |a,b|
+        Blades::Ability.compare a, b, playbook
+      }.map { |a| Blades::Ability.to_json a },
       strangeFriends: strange_friends.map {|sf| sf.to_json}
     }
   end
+
+private
+
+  def vigor
+    result = 0
+    special_abilities.each do |a|
+      if Blades::Ability.get(a)[:vigor]
+        result += 1
+      end
+    end
+    return result
+  end
+
+  def load_bonus
+    result = 0
+    special_abilities.each do |a|
+      ability = Blades::Ability.get(a)
+      if ability[:load]
+        result += ability[:load]
+      end
+    end
+    return result
+  end
+
 end
