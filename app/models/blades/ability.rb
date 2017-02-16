@@ -271,13 +271,4 @@ class Blades::Ability
         ],
     }
   end
-
-  def self.crew_abilities
-    {
-      "Shadows": [
-        "Everyone Steals", "Pack Rats", "Slippery", "Synchronized", "Second Story",
-        "Patron", "Ghost Echoes"
-      ]
-    }
-  end
 end

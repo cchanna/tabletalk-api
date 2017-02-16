@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205055326) do
+ActiveRecord::Schema.define(version: 20170214053312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,9 +74,85 @@ ActiveRecord::Schema.define(version: 20170205055326) do
     t.text     "items",                         default: [],    null: false, array: true
     t.string   "trauma",                        default: [],    null: false, array: true
     t.boolean  "armor_special",                 default: false, null: false
+    t.integer  "crew_id"
     t.index ["edit_permission_id"], name: "index_blades_characters_on_edit_permission_id", using: :btree
     t.index ["game_id"], name: "index_blades_characters_on_game_id", using: :btree
     t.index ["view_permission_id"], name: "index_blades_characters_on_view_permission_id", using: :btree
+  end
+
+  create_table "blades_claims", force: :cascade do |t|
+    t.integer  "crew_id",    null: false
+    t.integer  "row",        null: false
+    t.integer  "column",     null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["crew_id"], name: "index_blades_claims_on_crew_id", using: :btree
+  end
+
+  create_table "blades_cohorts", force: :cascade do |t|
+    t.integer  "crew_id",                                null: false
+    t.string   "name",        limit: 50,                 null: false
+    t.integer  "quality",     limit: 2,  default: 0,     null: false
+    t.boolean  "weak",                   default: false, null: false
+    t.boolean  "impaired",               default: false, null: false
+    t.boolean  "broken",                 default: false, null: false
+    t.boolean  "armor",                  default: false, null: false
+    t.text     "description"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.index ["crew_id"], name: "index_blades_cohorts_on_crew_id", using: :btree
+  end
+
+  create_table "blades_contacts", force: :cascade do |t|
+    t.integer  "crew_id",                                null: false
+    t.string   "name",        limit: 50,                 null: false
+    t.string   "title",       limit: 50,                 null: false
+    t.text     "description"
+    t.boolean  "favorite",               default: false, null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.index ["crew_id"], name: "index_blades_contacts_on_crew_id", using: :btree
+  end
+
+  create_table "blades_crew_abilities", force: :cascade do |t|
+    t.integer  "crew_id",               null: false
+    t.string   "name",       limit: 50, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.index ["crew_id"], name: "index_blades_crew_abilities_on_crew_id", using: :btree
+  end
+
+  create_table "blades_crew_upgrades", force: :cascade do |t|
+    t.integer  "crew_id",               null: false
+    t.string   "name",       limit: 50, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.index ["crew_id"], name: "index_blades_crew_upgrades_on_crew_id", using: :btree
+  end
+
+  create_table "blades_crews", force: :cascade do |t|
+    t.integer  "game_id",                                                null: false
+    t.string   "name",                        limit: 50,                 null: false
+    t.string   "playbook",                    limit: 50
+    t.string   "reputation",                  limit: 50
+    t.integer  "rep",                         limit: 2,  default: 0,     null: false
+    t.boolean  "strong",                                 default: false, null: false
+    t.integer  "tier",                        limit: 2,  default: 0,     null: false
+    t.integer  "heat",                        limit: 2,  default: 0,     null: false
+    t.integer  "wanted_level",                limit: 2,  default: 0,     null: false
+    t.integer  "coin",                        limit: 2,  default: 0,     null: false
+    t.integer  "xp",                          limit: 2,  default: 0,     null: false
+    t.string   "hunting_grounds",             limit: 50
+    t.text     "hunting_grounds_description"
+    t.text     "lair"
+    t.integer  "available_upgrades",          limit: 2,  default: 0,     null: false
+    t.integer  "edit_permission_id",                                     null: false
+    t.integer  "view_permission_id",                                     null: false
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
+    t.index ["edit_permission_id"], name: "index_blades_crews_on_edit_permission_id", using: :btree
+    t.index ["game_id"], name: "index_blades_crews_on_game_id", using: :btree
+    t.index ["view_permission_id"], name: "index_blades_crews_on_view_permission_id", using: :btree
   end
 
   create_table "blades_strange_friends", force: :cascade do |t|

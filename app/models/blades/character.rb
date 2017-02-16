@@ -31,6 +31,7 @@ class Blades::Character < ApplicationRecord
   belongs_to :edit_permission, class_name: :Permission
   belongs_to :view_permission, class_name: :Permission
   belongs_to :game
+  belongs_to :crew, optional: true
   has_many :strange_friends, dependent: :destroy
 
   def self.load as:
