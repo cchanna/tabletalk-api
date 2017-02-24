@@ -1,7 +1,7 @@
 class AddCrew < ActiveRecord::Migration[5.0]
   def change
     create_table :blades_crews do |t|
-      t.references :game,                        null: false
+      t.references :game, type: :uuid,           null: false
       t.string     :name,                        null: false,                 limit: 50
       t.string     :playbook,                                                 limit: 50
       t.string     :reputation,                                               limit: 50
@@ -51,12 +51,15 @@ class AddCrew < ActiveRecord::Migration[5.0]
 
     create_table :blades_cohorts do |t|
       t.references :crew,     null: false
-      t.string     :name,     null: false,             limit: 50
-      t.integer    :quality,  null: false, default: 0, limit: 2
+      t.string     :name,     null: false,                 limit: 50
+      t.boolean    :is_gang,  null: false, default: true
+      t.string     :kind,     null: false,                 limit: 50
       t.boolean    :weak,     null: false, default: false
       t.boolean    :impaired, null: false, default: false
       t.boolean    :broken,   null: false, default: false
       t.boolean    :armor,    null: false, default: false
+      t.string     :flaws,    null: false, default: [],    array: true
+      t.string     :edges,    null: false, default: [],    array: true
       t.text       :description
       t.timestamps
     end

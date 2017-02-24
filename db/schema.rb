@@ -92,11 +92,14 @@ ActiveRecord::Schema.define(version: 20170214053312) do
   create_table "blades_cohorts", force: :cascade do |t|
     t.integer  "crew_id",                                null: false
     t.string   "name",        limit: 50,                 null: false
-    t.integer  "quality",     limit: 2,  default: 0,     null: false
+    t.boolean  "is_gang",                default: true,  null: false
+    t.string   "kind",        limit: 50,                 null: false
     t.boolean  "weak",                   default: false, null: false
     t.boolean  "impaired",               default: false, null: false
     t.boolean  "broken",                 default: false, null: false
     t.boolean  "armor",                  default: false, null: false
+    t.string   "flaws",                  default: [],    null: false, array: true
+    t.string   "edges",                  default: [],    null: false, array: true
     t.text     "description"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
@@ -131,7 +134,7 @@ ActiveRecord::Schema.define(version: 20170214053312) do
   end
 
   create_table "blades_crews", force: :cascade do |t|
-    t.integer  "game_id",                                                null: false
+    t.uuid     "game_id",                                                null: false
     t.string   "name",                        limit: 50,                 null: false
     t.string   "playbook",                    limit: 50
     t.string   "reputation",                  limit: 50

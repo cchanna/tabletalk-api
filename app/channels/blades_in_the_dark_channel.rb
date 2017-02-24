@@ -39,6 +39,8 @@ class BladesInTheDarkChannel < ApplicationCable::Channel
     case what
     when :character
       Blades::Character.do args[:data], key: args[:key], as: @player
+    when :crew
+      Blades::Crew.do args[:data], key: args[:key], as: @player
     end
   end
 

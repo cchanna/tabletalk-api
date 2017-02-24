@@ -4,6 +4,8 @@ class Blades::Claim < ApplicationRecord
     greater_than_or_equal_to: 0
   }
 
+  belongs_to :crew
+
   def self.claims_descriptions
     {
       "Covert Drops" => %q{
@@ -59,9 +61,17 @@ class Blades::Claim < ApplicationRecord
     }
   end
 
-  belongs_to :crew
+  def name
+    pb = self.class.playbook_claims[crew.playbook]
+    return nil unless pb
+    return pb[:claims][row][column]
+  end
 
-  def self.map claims, playbook:
+  def description
+    return self.class.claims_descriptions[name]
+  end
+
+  def self.map claims, playbook
     claims_result = []
     pb = playbook_claims[playbook]
     unless pb
