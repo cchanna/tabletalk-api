@@ -76,22 +76,18 @@ class Blades::CrewUpgrade < ApplicationRecord
       result[:lair].push({
         name: name,
         max: max[name] || 1,
-        cost: 1,
         value: values[name] || 0
       })
     end
     quality.each do |name|
       result[:quality].push({
         name: name,
-        max: 1,
-        cost: 1,
         value: values[name] ? 1 : 0
       })
     end
     training.each do |name|
       result[:training].push({
         name: name,
-        max: 1,
         cost: cost[name] || 1,
         value: values[name] ? 1 : 0
       })
@@ -100,7 +96,6 @@ class Blades::CrewUpgrade < ApplicationRecord
     crew.each do |name|
       upgrade = definitions[name] || {}
       upgrade[:name] = name
-      upgrade[:max] = 1
       upgrade[:cost] = cost[name] || 1
       upgrade[:value] = values[name] ? 1 : 0
       result[:crew].push upgrade

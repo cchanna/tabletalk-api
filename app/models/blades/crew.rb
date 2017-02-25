@@ -69,6 +69,7 @@ class Blades::Crew < ApplicationRecord
   end
 
   def to_json
+    upgradesMap = Blades::CrewUpgrade.map(upgrades, playbook)
     return {
       id: id,
       name: name,
@@ -89,7 +90,10 @@ class Blades::Crew < ApplicationRecord
           Blades::CrewAbility.compare a, b, playbook
       }.map { |ability| ability.to_json },
       contacts: contacts.map { |contact| contact.to_json },
-      upgrades: Blades::CrewUpgrade.map(upgrades, playbook),
+      lairUpgrades: upgradesMap[:lair],
+      qualityUpgrades: upgradesMap[:quality],
+      trainingUpgrades: upgradesMap[:training],
+      crewUpgrades: upgradesMap[:crew],
       cohorts: cohorts.map { |cohort| cohort.to_json },
       availableUpgrades: available_upgrades,
       edit: edit_permission.to_json,
@@ -122,10 +126,15 @@ class Blades::Crew < ApplicationRecord
   end
 
   def increment_xp
-    return unless xp < 8
-    update xp: xp + 1
-    broadcast action: :increment_xp
-    log "#{name} gained an XP (#{xp})"
+    if xp < 7
+      update xp: xp + 1
+      broadcast action: :increment_xp
+      log "#{name} gained an XP (#{xp})"
+    else
+      update xp: 0, available_upgrades: available_upgrades + 2
+      broadcast action: :increment_xp
+      log "#{name} leveled up!"
+    end
   end
 
   def decrement_xp
