@@ -89,7 +89,7 @@ class Blades::Crew < ApplicationRecord
           Blades::CrewAbility.compare a, b, playbook
       }.map { |ability| ability.to_json },
       contacts: contacts.map { |contact| contact.to_json },
-      upgrades: upgrades.map { |upgrade| upgrade.to_json },
+      upgrades: Blades::CrewUpgrade.map(upgrades, playbook),
       cohorts: cohorts.map { |cohort| cohort.to_json },
       availableUpgrades: available_upgrades,
       edit: edit_permission.to_json,
