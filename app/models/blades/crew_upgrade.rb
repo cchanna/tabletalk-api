@@ -42,7 +42,7 @@ class Blades::CrewUpgrade < ApplicationRecord
         rigging: ["tools", "gear"]
       },
       "Steady" => {
-        stress: true,
+        stress: true
       }
     }
   end

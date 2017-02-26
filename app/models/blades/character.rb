@@ -157,7 +157,7 @@ class Blades::Character < ApplicationRecord
     xp_prop = (legal_actions[prop].to_s + '_xp').to_sym
     xp = send xp_prop
     return unless value < 4
-    return if xp_prop == :playbook and xp < 8
+    return unless value < 3 or mastery
     return unless xp >= 6
     update prop => value + 1, xp_prop => 0
     broadcast action: :advance_action, value: action
@@ -307,7 +307,6 @@ class Blades::Character < ApplicationRecord
     return if value == load
     update load: value
     broadcast action: :set_load, value: value
-    load_name = load.to_s
     if load == 6 + load_bonus
       log "#{name} is using a heavy load"
     elsif load == 5 + load_bonus
@@ -379,7 +378,8 @@ class Blades::Character < ApplicationRecord
       specialAbilities: special_abilities.sort{ |a,b|
         Blades::Ability.compare a, b, playbook
       }.map { |a| Blades::Ability.to_json a },
-      strangeFriends: strange_friends.map {|sf| sf.to_json}
+      strangeFriends: strange_friends.map {|sf| sf.to_json},
+      crewId: crew ? crew.id : nil
     }
   end
 
@@ -404,6 +404,10 @@ private
       end
     end
     return result
+  end
+
+  def mastery
+    upgrades.where(name: "Mastery").count > 0
   end
 
 end
