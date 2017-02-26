@@ -121,7 +121,8 @@ class Blades::Crew < ApplicationRecord
     [
       :increment_xp, :decrement_xp, :increment_heat, :decrement_heat,
       :serve_time, :increment_coin, :decrement_coin,
-      :increment_rep, :decrement_rep, :toggle_claim
+      :increment_rep, :decrement_rep, :toggle_claim,
+      :add_upgrade
     ]
   end
 
@@ -221,6 +222,19 @@ class Blades::Crew < ApplicationRecord
       log "#{name} gained the claim \"#{claim.name}\""
     end
   end
+
+  def add_upgrade value
+    count = upgrades.where(name: value).count
+    max = Blades::CrewUpgrade.max(value)
+    cost = Blades::CrewUpgrade.cost(value)
+    if available_upgrades >= cost and count < max
+      upgrades.create name: value
+      update available_upgrades: available_upgrades - cost
+      broadcast action: :add_upgrade, value: value
+      log "#{name} gained the upgrade \"#{value}\""
+    end
+  end
+
 private
 
   def vaults

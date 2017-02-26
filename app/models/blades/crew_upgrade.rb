@@ -3,23 +3,22 @@ class Blades::CrewUpgrade < ApplicationRecord
 
   belongs_to :crew
 
-  def self.max
-    {
+  def self.max name
+    values = {
       "Boat" => 2,
       "Carriage" => 2,
-      "Hidden" => 1,
-      "Quarters" => 1,
       "Secure" => 2,
       "Vault" => 2,
-      "Workshop" => 1,
     }
+    return values[name] || 1
   end
 
-  def self.cost
-    {
+  def self.cost name
+    values = {
       "Steady" => 3,
       "Mastery" => 4
     }
+    return values[name] || 1
   end
 
   def self.lair
@@ -67,38 +66,43 @@ class Blades::CrewUpgrade < ApplicationRecord
     end
     puts upgrades.inspect
     result = {
-      lair: [],
-      quality: [],
-      training: [],
-      crew: []
+      lair: {},
+      quality: {},
+      training: {},
+      crew: {}
     }
-    lair.each do |name|
-      result[:lair].push({
-        name: name,
-        max: max[name] || 1,
+    lair.each_with_index do |name, i|
+      result[:lair][name] = {
+        order: i,
+        max: max(name),
+        cost: cost(name),
         value: values[name] || 0
-      })
+      }
     end
-    quality.each do |name|
-      result[:quality].push({
-        name: name,
+    quality.each_with_index do |name, i|
+      result[:quality][name] = {
+        order: i,
+        max: max(name),
+        cost: cost(name),
         value: values[name] ? 1 : 0
-      })
+      }
     end
-    training.each do |name|
-      result[:training].push({
-        name: name,
-        cost: cost[name] || 1,
+    training.each_with_index do |name, i|
+      result[:training][name] = {
+        order: i,
+        max: max(name),
+        cost: cost(name),
         value: values[name] ? 1 : 0
-      })
+      }
     end
     crew = crew_upgrades[playbook] || []
-    crew.each do |name|
+    crew.each_with_index do |name, i|
       upgrade = definitions[name] || {}
-      upgrade[:name] = name
-      upgrade[:cost] = cost[name] || 1
+      upgrade[:order] = i
+      upgrade[:max] = max(name)
+      upgrade[:cost] = cost(name)
       upgrade[:value] = values[name] ? 1 : 0
-      result[:crew].push upgrade
+      result[:crew][name] = upgrade
     end
     return result
   end
