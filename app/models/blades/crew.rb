@@ -133,6 +133,9 @@ class Blades::Crew < ApplicationRecord
       log "#{name} gained an XP (#{xp})"
     else
       update xp: 0, available_upgrades: available_upgrades + 2
+      characters.each do |c|
+        c.update stash: c.stash + 1 + (2 * tier)
+      end
       broadcast action: :increment_xp
       log "#{name} leveled up!"
     end
