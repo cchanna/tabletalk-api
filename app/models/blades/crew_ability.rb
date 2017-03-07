@@ -9,50 +9,50 @@ class Blades::CrewAbility < ApplicationRecord
         description: %q{
           Each PC may add +1 action rating to *Prowl*, *Finesse*, or *Tinker*
           (up to a max rating of 3).
-        }
+        }.gsub(/\s+/, ' ').strip
       },
       "Ghost Echoes" => {
         description: %q{
           From weird experience or occult ritual, all crew members gain the
           ability to see and interact with the spirit world of the First City.
-        }
+        }.gsub(/\s+/, ' ').strip
       },
       "No Traces" => {
         description: %q{
           When you keep an operation quiet or make it look like an accident, you
           get half the rep value of the target (round up) instead of zero. When
           you end *downtime* with zero heat, take *+1 rep*.
-        }
+        }.gsub(/\s+/, ' ').strip
       },
       "Pack Rats" => {
         description: %q{
           Your lair is a jumble of stolen items. When you roll to *acquire an
           asset*, take *+1d*.
-        }
+        }.gsub(/\s+/, ' ').strip
       },
       "Patron" => {
         description: %q{
           When you advance your *Tier*, it costs *half the coin* it normally
           would. _Who is your patron? Why do they help you?_
-        }
+        }.gsub(/\s+/, ' ').strip
       },
       "Second Story" => {
         description: %q{
           When you execute a clandestine infiltration, you get *+1d* to the
           *engagement roll*.
-        }
+        }.gsub(/\s+/, ' ').strip
       },
       "Slippery" => {
         description: %q{
           When you roll *entanglements*, roll twice and keep the one you want.
           When you *reduce heat* on the crew, take *+1d*.
-        }
+        }.gsub(/\s+/, ' ').strip
       },
       "Synchronized" => {
         description: %q{
           When you perform a *group action*, you may count multiple 6s from
           different rolls as a critical success.
-        }
+        }.gsub(/\s+/, ' ').strip
       }
     }
   end

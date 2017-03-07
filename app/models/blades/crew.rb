@@ -88,7 +88,7 @@ class Blades::Crew < ApplicationRecord
       claims: Blades::Claim.map(claims, playbook),
       abilities: abilities.sort{ |a,b|
           Blades::CrewAbility.compare a, b, playbook
-      }.map { |ability| ability.to_json },
+      }.map { |ability| ability.name },
       contacts: contacts.map { |contact| contact.to_json },
       lairUpgrades: upgradesMap[:lair],
       qualityUpgrades: upgradesMap[:quality],

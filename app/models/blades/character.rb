@@ -377,7 +377,7 @@ class Blades::Character < ApplicationRecord
       viewPermission: view_permission.to_json,
       specialAbilities: special_abilities.sort{ |a,b|
         Blades::Ability.compare a, b, playbook
-      }.map { |a| Blades::Ability.to_json a },
+      },
       strangeFriends: strange_friends.map {|sf| sf.to_json},
       crewId: crew ? crew.id : nil
     }
