@@ -10,7 +10,7 @@ module Blades
       crew: {
         abilities: {
           def: CrewAbility.abilities,
-          playook: CrewAbility.playbook_abilities
+          playbook: CrewAbility.playbook_abilities
         }
       },
       character: {

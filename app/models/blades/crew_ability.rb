@@ -5,6 +5,28 @@ class Blades::CrewAbility < ApplicationRecord
 
   def self.abilities
     {
+      "Crow's Veil" => {
+        description: %q{
+          Due to hard-won experience or occult ritual, your activities are
+          hidden from the notice of the death-seeker crows. You don't take extra
+          heat when killing is involved on a score.
+        }.gsub(/\s+/, ' ').strip
+      },
+      "Deadly" => {
+        description: %q{
+          Each PC may add +1 action rating to *Hunt*, *Prowl*, or *Skirmish*
+          (up to a max rating of 3).
+        }.gsub(/\s+/, ' ').strip
+      },
+      "Emberdeath" => {
+        description: %q{
+          Due to hard-won experience or occult ritual, you know the arcane
+          method to destroy a living victim's spirit at the moment you kill
+          them. Take 3 stress to channel electroplasmic energy from the ghost
+          field to disintegrate the spirit and dead body in a shower of sparking
+          embers.
+        }.gsub(/\s+/, ' ').strip
+      },
       "Everyone Steals" => {
         description: %q{
           Each PC may add +1 action rating to *Prowl*, *Finesse*, or *Tinker*
@@ -36,6 +58,12 @@ class Blades::CrewAbility < ApplicationRecord
           would. _Who is your patron? Why do they help you?_
         }.gsub(/\s+/, ' ').strip
       },
+      "Predators" => {
+        description: %q{
+          When you use stealth or subterfuge to commit murder, take *+1d* to the
+          *engagement* roll.
+        }
+      },
       "Second Story" => {
         description: %q{
           When you execute a clandestine infiltration, you get *+1d* to the
@@ -53,15 +81,26 @@ class Blades::CrewAbility < ApplicationRecord
           When you perform a *group action*, you may count multiple 6s from
           different rolls as a critical success.
         }.gsub(/\s+/, ' ').strip
+      },
+      "Vipers" => {
+        description: %q{
+          When you acquire or craft poisons, you get +1 result level to your
+          roll. When you employ a poison, you are specially prepared to be
+          immune to its effects.
+        }
       }
     }
   end
 
   def self.playbook_abilities
     {
+      "Assassins" => [
+        "Deadly", "Crow's Veil", "Emberdeath", "No Traces", "Patron",
+        "Predators", "Vipers"
+      ],
       "Shadows" => [
-        "Everyone Steals", "Pack Rats", "Slippery", "Synchronized", "Second Story",
-        "Patron", "Ghost Echoes"
+        "Everyone Steals", "Pack Rats", "Slippery", "Synchronized",
+        "Second Story", "Patron", "Ghost Echoes"
       ]
     }
   end
