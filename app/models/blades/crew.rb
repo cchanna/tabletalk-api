@@ -241,18 +241,8 @@ class Blades::Crew < ApplicationRecord
   def add_ability value
     name = value[:name]
     veteran = value[:veteran]
-    if veteran
-      veteran_abilities = abilities
-        .joins(:veteran_ability)
-        .select('blades_veteran_crew_abilities.name')
-      return if veteran_abilities.find_by name: name
-      return if veteran_abilities.count >= 2
-      ability = abilities.create name: "Veteran"
-      Blades::VeteranCrewAbility.create ability: ability, name: name
-    else
-      return if abilities.find_by name: name
-      abilities.create name: name
-    end
+    return if abilities.find_by name: name
+    abilities.create name: name, veteran: veteran
     update available_upgrades: available_upgrades - 2
     broadcast action: :add_ability, value: value
     log "#{name} gained the ability \"#{value}\""

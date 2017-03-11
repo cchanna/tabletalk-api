@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170311185306) do
+ActiveRecord::Schema.define(version: 20170311195538) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -118,10 +118,11 @@ ActiveRecord::Schema.define(version: 20170311185306) do
   end
 
   create_table "blades_crew_abilities", force: :cascade do |t|
-    t.integer  "crew_id",               null: false
-    t.string   "name",       limit: 50, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "crew_id",                               null: false
+    t.string   "name",       limit: 50,                 null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.boolean  "veteran",               default: false, null: false
     t.index ["crew_id"], name: "index_blades_crew_abilities_on_crew_id", using: :btree
   end
 
@@ -167,14 +168,6 @@ ActiveRecord::Schema.define(version: 20170311185306) do
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
     t.index ["character_id"], name: "index_blades_strange_friends_on_character_id", using: :btree
-  end
-
-  create_table "blades_veteran_crew_abilities", force: :cascade do |t|
-    t.integer  "ability_id", null: false
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["ability_id"], name: "index_blades_veteran_crew_abilities_on_ability_id", using: :btree
   end
 
   create_table "chats", force: :cascade do |t|

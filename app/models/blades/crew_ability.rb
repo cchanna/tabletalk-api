@@ -2,7 +2,6 @@ class Blades::CrewAbility < ApplicationRecord
   validates :name, presence: true, length: { maximum: 50 }
 
   belongs_to :crew
-  has_one :veteran_ability, class_name: :VeteranCrewAbility, foreign_key: "ability_id"
 
   def self.abilities
     {
@@ -315,16 +314,9 @@ class Blades::CrewAbility < ApplicationRecord
   end
 
   def to_json
-    if name == "Veteran" and veteran_ability
-      return {
-        name: veteran_ability.name,
-        veteran: true
-      }
-    else
-      return {
-        name: name,
-        veteran: false
-      }
-    end
+    return {
+      name: name,
+      veteran: veteran
+    }
   end
 end
