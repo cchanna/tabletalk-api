@@ -88,7 +88,7 @@ class Blades::Crew < ApplicationRecord
       claims: Blades::Claim.map(claims, playbook),
       abilities: abilities.sort{ |a,b|
           Blades::CrewAbility.compare a, b, playbook
-      }.map { |ability| ability.name },
+      }.map { |ability| ability.to_json },
       contacts: contacts.map { |contact| contact.to_json },
       lairUpgrades: upgradesMap[:lair],
       qualityUpgrades: upgradesMap[:quality],
@@ -144,7 +144,7 @@ class Blades::Crew < ApplicationRecord
   def decrement_xp
     return unless xp > 0
     update xp: xp - 1
-    boradcast action: :decrement_xp
+    broadcast action: :decrement_xp
     log "#{name} lost an XP (#{xp})"
   end
 
@@ -239,8 +239,20 @@ class Blades::Crew < ApplicationRecord
   end
 
   def add_ability value
-    return if abilities.find_by(name: value)
-    abilities.create name: value
+    name = value[:name]
+    veteran = value[:veteran]
+    if veteran
+      veteran_abilities = abilities
+        .joins(:veteran_ability)
+        .select('blades_veteran_crew_abilities.name')
+      return if veteran_abilities.find_by name: name
+      return if veteran_abilities.count >= 2
+      ability = abilities.create name: "Veteran"
+      Blades::VeteranCrewAbility.create ability: ability, name: name
+    else
+      return if abilities.find_by name: name
+      abilities.create name: name
+    end
     update available_upgrades: available_upgrades - 2
     broadcast action: :add_ability, value: value
     log "#{name} gained the ability \"#{value}\""
