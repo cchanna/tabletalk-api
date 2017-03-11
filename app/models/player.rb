@@ -6,8 +6,11 @@ class Player < ApplicationRecord
   validates :admin, inclusion: { in: [true, false] }
 
   def load
-    if Game.types[game.game_type] == :blades_in_the_dark
+    case Game.types[game.game_type]
+    when :blades_in_the_dark
       return Blades.load as: self
+    when :world_of_adventure
+      return Adventure.load as: self
     end
     return Result.failure "nothing to load"
   end

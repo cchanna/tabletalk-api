@@ -92,11 +92,12 @@ class Blades::Claim < ApplicationRecord
           description: description,
           owned: false
         }
-        claim = claims.find_by row: r, column: c
-        entry[:owned] = true if claim
         row.push entry
       end
       claims_result.push row
+    end
+    claims.each do |claim|
+      claims_result[claim.row][claim.column][:owned] = true
     end
     result = {
       claims: claims_result,
