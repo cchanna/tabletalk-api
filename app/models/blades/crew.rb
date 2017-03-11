@@ -122,7 +122,7 @@ class Blades::Crew < ApplicationRecord
       :increment_xp, :decrement_xp, :increment_heat, :decrement_heat,
       :serve_time, :increment_coin, :decrement_coin,
       :increment_rep, :decrement_rep, :toggle_claim,
-      :add_upgrade
+      :add_upgrade, :add_ability
     ]
   end
 
@@ -236,6 +236,14 @@ class Blades::Crew < ApplicationRecord
       broadcast action: :add_upgrade, value: value
       log "#{name} gained the upgrade \"#{value}\""
     end
+  end
+
+  def add_ability value
+    return if abilities.find_by(name: value)
+    abilities.create name: value
+    update available_upgrades: available_upgrades - 2
+    broadcast action: :add_ability, value: value
+    log "#{name} gained the ability \"#{value}\""
   end
 
 private
