@@ -239,13 +239,13 @@ class Blades::Crew < ApplicationRecord
   end
 
   def add_ability value
-    name = value[:name]
+    ability_name = value[:name]
     veteran = value[:veteran]
-    return if abilities.find_by name: name
-    abilities.create name: name, veteran: veteran
+    return if abilities.find_by name: ability_name
+    abilities.create name: ability_name, veteran: veteran
     update available_upgrades: available_upgrades - 2
     broadcast action: :add_ability, value: value
-    log "#{name} gained the ability \"#{value}\""
+    log "#{name} gained the ability \"#{ability_name}\""
   end
 
 private
