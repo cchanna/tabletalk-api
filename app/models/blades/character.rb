@@ -33,6 +33,7 @@ class Blades::Character < ApplicationRecord
   belongs_to :game
   belongs_to :crew, optional: true
   has_many :strange_friends, dependent: :destroy
+  has_many :abilities, class_name: :CharacterAbility
 
   def self.load as:
     player = as.respond_to?(:id) ? as : Player.find_by(id: as)
@@ -375,9 +376,7 @@ class Blades::Character < ApplicationRecord
       items: items,
       editPermission: edit_permission.to_json,
       viewPermission: view_permission.to_json,
-      specialAbilities: special_abilities.sort{ |a,b|
-        Blades::Ability.compare a, b, playbook
-      },
+      specialAbilities: abilities.sort.map { |a| a.to_json },
       strangeFriends: strange_friends.map {|sf| sf.to_json},
       crewId: crew ? crew.id : nil
     }

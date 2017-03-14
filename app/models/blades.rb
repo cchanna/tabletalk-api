@@ -47,8 +47,8 @@ module Blades
       },
       character: {
         abilities: {
-          def: Ability.abilities,
-          playbook: Ability.playbook_abilities
+          def: CharacterAbility.abilities,
+          playbook: CharacterAbility.playbook_abilities
         }
       }
     }

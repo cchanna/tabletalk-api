@@ -1,15 +1,10 @@
-class Blades::Ability
+class Blades::CharacterAbility < ApplicationRecord
+  validates :name, presence: true, length: { maximum: 50 }
+  
+  belongs_to :character
 
   def self.get name
     abilities[name.to_sym]
-  end
-
-  def self.to_json name
-    result = {}
-    a = abilities[name.to_sym]
-    result = a if a
-    result[:name] = name
-    return result
   end
 
   def self.playbook playbook
@@ -21,6 +16,7 @@ class Blades::Ability
   def self.compare a, b, playbook_name
     pb = playbook_abilities[playbook_name.to_sym]
     return 0 if a == b
+    return a <=> b unless pb
     if pb.include? a
       return -1 unless pb.include? b
       a_index = pb.find_index a
@@ -34,6 +30,23 @@ class Blades::Ability
     end
     return 0
   end
+
+  def <=> other
+    pb = self.class.playbook_abilities[self.character.playbook]
+    return 0 if self == other
+    return self <=> other unless pb
+    if veteran
+      return -1 unless other.veteran
+      self_index = pb.find_index name
+      other_index = pb.find_index other.name
+      return self_index <=> other_index
+    else
+      return 1 if other.veteran
+      return name <=> other.name
+    end
+    return 0
+  end
+
 
   def self.abilities
     {
@@ -252,23 +265,27 @@ class Blades::Ability
 
   def self.playbook_abilities
     {
-        "Cutter": [
+        "Cutter" => [
           "Battleborn", "Bodyguard", "Ghost Fighter", "Leader", "Mule",
           "Not to be Trifled With", "Savage", "Vigorous"
         ],
-        "Lurk": [
+        "Lurk" => [
           "Infiltrator", "Ambush", "Daredevil", "The Devil's Footsteps",
           "Expertise", "Ghost Veil", "Reflexes", "Shadow"
         ],
-        "Slide": [
+        "Slide" => [
           "Rook's Gambit", "Cloak & Dagger", "Ghost Voice",
           "A Little Something on the Side", "Like Looking into a Mirror",
           "Mesmerism", "Subterfuge", "Trust in Me",
         ],
-        "Spider": [
+        "Spider" => [
           "Foresight", "Calculating", "Connected", "Functioning Vice",
           "Ghost Contract", "Jail Bird", "Mastermind", "Weaving the Web",
         ],
     }
+  end
+
+  def to_json
+    return name
   end
 end
