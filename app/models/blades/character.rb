@@ -376,7 +376,7 @@ class Blades::Character < ApplicationRecord
       items: items,
       editPermission: edit_permission.to_json,
       viewPermission: view_permission.to_json,
-      specialAbilities: abilities.sort.map { |a| a.to_json },
+      abilities: abilities.sort.map { |a| a.to_json },
       strangeFriends: strange_friends.map {|sf| sf.to_json},
       crewId: crew ? crew.id : nil
     }
@@ -386,18 +386,16 @@ private
 
   def vigor
     result = 0
-    special_abilities.each do |a|
-      if Blades::Ability.get(a)[:vigor]
-        result += 1
-      end
+    abilities.each do |a|
+      result += 1 if a.vigor
     end
     return result
   end
 
   def load_bonus
     result = 0
-    special_abilities.each do |a|
-      ability = Blades::Ability.get(a)
+    abilities.each do |a|
+      ability = Blades::Ability.get(a.name)
       if ability[:load]
         result += ability[:load]
       end
