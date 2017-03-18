@@ -91,7 +91,8 @@ class Blades::Character < ApplicationRecord
       :increment_stress, :decrement_stress, :add_trauma,
       :edit_harm, :use_armor,
       :unlock_healing, :increment_healing, :decrement_healing,
-      :use_item, :clear_item, :clear_items, :set_load
+      :use_item, :clear_item, :clear_items, :set_load,
+      :add_ability
     ]
   end
 
@@ -317,6 +318,16 @@ class Blades::Character < ApplicationRecord
     else
       log "#{name} is using a load of #{load}"
     end
+  end
+
+  def add_ability value
+    ability_name = value[:name]
+    veteran = value[:veteran]
+    return if abilities.find_by name: ability_name
+    abilities.create name: ability_name, veteran: veteran
+    update playbook_xp: 0
+    broadcast action: :add_ability, value: value
+    log "#{name} gained the ability \"#{ability_name}\""
   end
 
   def do(action, with:nil, key:, as:)

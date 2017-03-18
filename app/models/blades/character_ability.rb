@@ -113,7 +113,7 @@ class Blades::CharacterAbility < ApplicationRecord
           When you *push yourself*, choose one of the following additional
           benefits: _perform a feat of athletics that verges on the
           superhuman_—_maneuver to confuse your enemies so they mistakenly
-          attack each other.
+          attack each other_.
         }
       },
       "Expertise" => {
