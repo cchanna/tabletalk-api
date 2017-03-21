@@ -123,6 +123,13 @@ class Blades::CharacterAbility < ApplicationRecord
           the number of failed rolls.
         }
       },
+      "Focused" => {
+        description: %q{
+          You may expend your *special armor* to resist a consequence of
+          surprise or mental harm (fear, confusion, losing track of someone) or
+          to *push yourself* for ranged combat or tracking.
+        }
+      },
       "Foresight" => {
         description: %q{
           Two times per score you can *assist* a teammate without paying
@@ -148,6 +155,17 @@ class Blades::CharacterAbility < ApplicationRecord
           energy. You gain *potency* in combat vs. the supernatural. You may
           grapple with spirits to restrain and capture them.
         }
+      },
+      "Ghost Hunter" => {
+        description: %q{
+          Your hunting pet is imbued with spiritual energy. It gains *potency*
+          when tracking or fighting the supernatural, and gains an arcane
+          ability: _ghost-form_, _mind-link_, or _arrow-swift_. Take this
+          ability again to choose an additional arcane ability for your pet.
+        },
+        max: 2,
+        options: ["ghost-form", "mind-link", "arrow-swift"],
+        maxOptions: 1
       },
       "Ghost Veil" => {
         description: %q{
@@ -239,11 +257,25 @@ class Blades::CharacterAbility < ApplicationRecord
           When you *Command* a frightened target, take *+1d*.
         }
       },
+      "Scout" => {
+        description: %q{
+          When you *gather info* to locate a target, you get *+1 effect*. When
+          you hide in a prepared position or use camoflage, you get *+1d* to
+          rolls to avoid detection.
+        }
+      },
       "Shadow" => {
         description: %q{
           You may expend your *special armor* to resist a consequence from
           detection or security measures, or to *push yourself* for a feat of
           athletics or stealth.
+        }
+      },
+      "Sharpshooter" => {
+        description: %q{
+          You can *push yourself* to do one of the following: _make a ranged
+          attack at extreme distance beyond what's normal for the
+          weapon_—_unleash a barrage of rapid fire to suppress the enemy_.
         }
       },
       "Subterfuge" => {
@@ -253,10 +285,35 @@ class Blades::CharacterAbility < ApplicationRecord
           suspsicion or persuasion, or to *push yourself* for
         }
       },
+      "Survivor" => {
+        description: %q{
+          From hard won experience or occult ritual, you are immune to poisonous
+          miasma of the deathlands and are able to subsist on the strange flora
+          and fauna there. You get *+1 stress box*.
+        },
+        bonusStress: 1
+      },
+      "Tough as Nails" => {
+        description: %q{
+          Penalties from harm are one level less severe (though level 4 harm is)
+          still fatal).
+        }
+      },
       "Trust in Me" => {
         description: %q{
           You get *+1d* vs. a target with whom you have an intimate
           relationship.
+        }
+      },
+      "Vengeful" => {
+        description: %q{
+          You gain an additional *xp trigger*: _You got payback against someone
+          you harmed you or someone you care about._ If your crew helped you get
+          payback, also mark crew xp.
+        },
+        xpTrigger: {
+          playbook: "You got payback against someone you harmed you or someone you care about.",
+          crew: "Help ${name} get vengeance."
         }
       },
       "Vigorous" => {
@@ -281,6 +338,10 @@ class Blades::CharacterAbility < ApplicationRecord
         "Cutter" => [
           "Battleborn", "Bodyguard", "Ghost Fighter", "Leader", "Mule",
           "Not to be Trifled With", "Savage", "Vigorous"
+        ],
+        "Hound" => [
+          "Sharpshooter", "Focused", "Ghost Hunter", "Scout", "Survivor",
+          "Tough as Nails", "Vengeful"
         ],
         "Lurk" => [
           "Infiltrator", "Ambush", "Daredevil", "The Devil's Footsteps",
