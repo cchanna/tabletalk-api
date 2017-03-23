@@ -63,9 +63,30 @@ class Blades::CharacterAbility < ApplicationRecord
 
   def self.abilities
     {
+      "Alchemist" => {
+        description: %q{
+          When you *invent* or *craft* a creation with _alchemical_ features,
+          take *+1d* to your roll. You begin with one special formula already
+          known.
+        }
+      },
       "Ambush" => {
         description: %q{
           When you attack from hiding or spring a trap, you get *+1d*.
+        }
+      },
+      "Analyst" => {
+        description: %q{
+          During *downtime*, you get *two ticks* to distribute among any
+          long-term project clocks that involve investigation or learning a new
+          formula or design plan.
+        }
+      },
+      "Artificer" => {
+        description: %q{
+          When you *invent* or *craft* a creation with _spark-craft_ features,
+          take *+1d* to your roll. You begin with one special design already
+          known.
         }
       },
       "Battleborn" => {
@@ -136,6 +157,13 @@ class Blades::CharacterAbility < ApplicationRecord
           stress. Tell us how you prepared for this.
         }
       },
+      "Fortitude" => {
+        description: %q{
+          You may expend your *special armor* to resist a consequence of
+          fatigue, weakness, or chemical effects, or to push yourself when
+          working with technical skill.
+        }
+      },
       "Functioning Vice" => {
         description: %q{
           When you indulge your *vice*, you may adjust the outcome by 1 or 2
@@ -181,6 +209,12 @@ class Blades::CharacterAbility < ApplicationRecord
           You know the secret method to interact with a ghost or demon as if
           it was a normal human, regardless of how wild or feral it appears.
           You gain *potency* when communicating with the supernatural.
+        }
+      },
+      "Ghost Ward" => {
+        description: %q{
+          You know how to *Wreck* an area with arcane substances and methods so
+          it is either anathema or enticing to spirits (your choice).
         }
       },
       "Infiltrator" => {
@@ -239,6 +273,14 @@ class Blades::CharacterAbility < ApplicationRecord
           gang on equal footing in close combat_.
         }
       },
+      "Physicker" => {
+        description: %q{
+          You can *tinker* with bones, blood, and bodily humours to treat
+          wounds, or to stabilize the dying. You may *study* a malady or corpse.
+          Everyone in your crew (including you) gets *+1d* to their healing
+          treatment rolls.
+        }
+      },
       "Reflexes" => {
         description: %q{
           When there's a question about who acts first, the answer is you (two
@@ -249,6 +291,12 @@ class Blades::CharacterAbility < ApplicationRecord
         description: %q{
           Take *2 stress* to roll your best action rating while performing a
           different action. Say how you adapt your skill to this use.
+        }
+      },
+      "Saboteur" => {
+        description: %q{
+          When you *Wreck*, the work is much quieter than it should be and the
+          damage is hidden from casual inspection.
         }
       },
       "Savage" => {
@@ -305,6 +353,13 @@ class Blades::CharacterAbility < ApplicationRecord
           relationship.
         }
       },
+      "Venomous" => {
+        description: %q{
+          Choose a drug or poison (from your bandolier stock) to which you have
+          become immune. You can *push yourself* to secrete it through your
+          skin or saliva or exhale it as a vapor.
+        }
+      },
       "Vengeful" => {
         description: %q{
           You gain an additional *xp trigger*: _You got payback against someone
@@ -342,6 +397,10 @@ class Blades::CharacterAbility < ApplicationRecord
         "Hound" => [
           "Sharpshooter", "Focused", "Ghost Hunter", "Scout", "Survivor",
           "Tough as Nails", "Vengeful"
+        ],
+        "Leech" => [
+          "Alchemist", "Artificer", "Analyst", "Fortitude", "Ghost Ward",
+          "Physicker", "Saboteur", "Venomous"
         ],
         "Lurk" => [
           "Infiltrator", "Ambush", "Daredevil", "The Devil's Footsteps",
