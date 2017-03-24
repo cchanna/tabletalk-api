@@ -116,6 +116,13 @@ class Blades::CharacterAbility < ApplicationRecord
           the situation.
         }
       },
+      "Compel" => {
+        description: %q{
+          You can *Attune* to the ghost field to force a nearby spirit to appear
+          and obey a command you give it. You are not supernaturally terrified
+          by a spirit you summon or compel (though your allies may be).
+        }
+      },
       "Connected" => {
         description: %q{
           During *downtime*, you get *+1 result level* when you make *acquire
@@ -195,6 +202,12 @@ class Blades::CharacterAbility < ApplicationRecord
         options: ["ghost-form", "mind-link", "arrow-swift"],
         maxOptions: 1
       },
+      "Ghost Mind" => {
+        description: %q{
+          You're always aware of supernatural entities in your presence. Take
+          *+1d* when you *gather info* about the supernatural.
+        }
+      },
       "Ghost Veil" => {
         description: %q{
           You may shift partially into the ghost field, becoming shadowy and
@@ -221,6 +234,12 @@ class Blades::CharacterAbility < ApplicationRecord
         description: %q{
           You are not effected by *quality* or *Tier* when you bypass security
           measures.
+        }
+      },
+      "Iron Will" => {
+        description: %q{
+          You're immune to the terror that some supernatural entities inflict on
+          sight. Take *+1d* to resistance rolls with *Resolve*.
         }
       },
       "Jail Bird" => {
@@ -273,6 +292,13 @@ class Blades::CharacterAbility < ApplicationRecord
           gang on equal footing in close combat_.
         }
       },
+      "Occultist" => {
+        description: %q{
+          You know the secret ways to *Consort* with ancient powers, forgotten
+          gods or demons. Once you've consorted with one, you get *+1d* to
+          *command* cultists who worship it.
+        }
+      },
       "Physicker" => {
         description: %q{
           You can *tinker* with bones, blood, and bodily humours to treat
@@ -285,6 +311,13 @@ class Blades::CharacterAbility < ApplicationRecord
         description: %q{
           When there's a question about who acts first, the answer is you (two
           characters with Reflexes act simultaneously).
+        }
+      },
+      "Ritual" => {
+        description: %q{
+          You can *Study* an occult ritual (or create a new one) to summon a
+          supernatural effect or being. You know the arcane methods to perform
+          ritual sorcery. You begin with one ritual already learned.
         }
       },
       "Rook's Gambit" => {
@@ -326,6 +359,12 @@ class Blades::CharacterAbility < ApplicationRecord
           weapon_—_unleash a barrage of rapid fire to suppress the enemy_.
         }
       },
+      "Strange Methods" => {
+        description: %q{
+          When you invent or craft a creation with _arcane_ features, take *+1d*
+          to your roll. You begin with one arcane design already known.
+        }
+      },
       "Subterfuge" => {
         description: %q{
           subterfuge.
@@ -340,6 +379,14 @@ class Blades::CharacterAbility < ApplicationRecord
           and fauna there. You get *+1 stress box*.
         },
         bonusStress: 1
+      },
+      "Tempest" => {
+        description: %q{
+          You can *push yourself* to do one of the following: _unleash a stroke
+          of lightning as a weapon_—_summon a heavy storm in your immediate
+          vicinity (torrential rain, roaring winds, heavy fog, chilling
+          frost/snow, etc.)_.
+        }
       },
       "Tough as Nails" => {
         description: %q{
@@ -378,6 +425,12 @@ class Blades::CharacterAbility < ApplicationRecord
         },
         vigor: 1
       },
+      "Warded" => {
+        description: %q{
+          You may expend your *special armor* to resist a supernatural
+          consequence, or to *push yourself* when you deal with arcane forces.
+        }
+      },
       "Weaving the Web" => {
         description: %q{
           You gain *+1d* to *Consort* when you *gather information* on a
@@ -415,6 +468,10 @@ class Blades::CharacterAbility < ApplicationRecord
           "Foresight", "Calculating", "Connected", "Functioning Vice",
           "Ghost Contract", "Jail Bird", "Mastermind", "Weaving the Web",
         ],
+        "Whisper" => [
+          "Compel", "Ghost Mind", "Iron Will", "Occultist", "Ritual",
+          "Strange Methods", "Tempest", "Warded"
+        ]
     }
   end
 end
