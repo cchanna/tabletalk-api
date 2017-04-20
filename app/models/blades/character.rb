@@ -274,7 +274,6 @@ class Blades::Character < ApplicationRecord
   end
 
   def use_item value
-    return if items.include? value
     items.push value
     if value == "+Heavy" and !items.include? "Armor"
       items.push "Armor"
@@ -286,7 +285,7 @@ class Blades::Character < ApplicationRecord
 
   def clear_item value
     return unless items.include? value
-    items.delete value
+    items.delete_at(items.index(value) || items.length)
     if value == "Armor"
       items.delete "+Heavy"
       update armor_normal: false, armor_heavy: false
