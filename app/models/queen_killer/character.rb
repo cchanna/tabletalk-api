@@ -35,7 +35,7 @@ class QueenKiller::Character < ApplicationRecord
       result[:killer] = killer
     end
     mine = QueenKiller::Character.find_by player: me
-    if mine.kisses.find_by(love_id: id, accepted: true) or kisses.find_by(love_id: mine.id, accepted: true)
+    if mine and (mine.kisses.find_by(love_id: id, accepted: true) or kisses.find_by(love_id: mine.id, accepted: true))
       result[:killer] = killer
       result[:worthy] = worthy
     end
