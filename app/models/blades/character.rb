@@ -384,6 +384,8 @@ class Blades::Character < ApplicationRecord
       specialArmor: armor_special,
       load: load,
       items: items,
+      bandolier1: bandolier1,
+      bandolier2: bandolier2,
       editPermission: edit_permission.to_json,
       viewPermission: view_permission.to_json,
       abilities: abilities.sort.map { |a| a.to_json },

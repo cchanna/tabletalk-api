@@ -28,7 +28,7 @@ class GamesController < ApplicationController
     player = required params, :player
     data = @game.players.create! name: player, user: @user, admin: false
     out = {
-      action: Chat.actions[:join],
+      action: 'join',
       id: data.id,
       name: data.name,
       admin: data.admin

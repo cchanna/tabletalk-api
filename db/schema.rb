@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170314010932) do
+ActiveRecord::Schema.define(version: 20170422110014) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,8 @@ ActiveRecord::Schema.define(version: 20170314010932) do
     t.string   "trauma",                        default: [],    null: false, array: true
     t.boolean  "armor_special",                 default: false, null: false
     t.integer  "crew_id"
+    t.integer  "bandolier1",         limit: 2,  default: 0,     null: false
+    t.integer  "bandolier2",         limit: 2,  default: 0,     null: false
     t.index ["edit_permission_id"], name: "index_blades_characters_on_edit_permission_id", using: :btree
     t.index ["game_id"], name: "index_blades_characters_on_game_id", using: :btree
     t.index ["view_permission_id"], name: "index_blades_characters_on_view_permission_id", using: :btree
@@ -225,6 +227,38 @@ ActiveRecord::Schema.define(version: 20170314010932) do
     t.datetime "updated_at", null: false
     t.index ["game_id"], name: "index_players_on_game_id", using: :btree
     t.index ["user_id"], name: "index_players_on_user_id", using: :btree
+  end
+
+  create_table "queen_killer_characters", force: :cascade do |t|
+    t.integer  "player_id",                              null: false
+    t.string   "name",       limit: 255
+    t.boolean  "dead",                   default: false, null: false
+    t.boolean  "killer",                 default: false, null: false
+    t.boolean  "worthy",                 default: false, null: false
+    t.boolean  "judged",                 default: false, null: false
+    t.boolean  "ready",                  default: false, null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.index ["player_id"], name: "index_queen_killer_characters_on_player_id", using: :btree
+  end
+
+  create_table "queen_killer_kisses", force: :cascade do |t|
+    t.integer  "suitor_id",                  null: false
+    t.integer  "love_id",                    null: false
+    t.boolean  "accepted",   default: false, null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.index ["love_id"], name: "index_queen_killer_kisses_on_love_id", using: :btree
+    t.index ["suitor_id"], name: "index_queen_killer_kisses_on_suitor_id", using: :btree
+  end
+
+  create_table "queen_killer_sessions", force: :cascade do |t|
+    t.uuid     "game_id",                                 null: false
+    t.string   "phase",      limit: 25, default: "intro", null: false
+    t.datetime "started"
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.index ["game_id"], name: "index_queen_killer_sessions_on_game_id", using: :btree
   end
 
   create_table "rolls", force: :cascade do |t|

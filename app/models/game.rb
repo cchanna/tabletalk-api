@@ -3,6 +3,7 @@ class Game < ApplicationRecord
     return [
       :world_of_adventure,
       :blades_in_the_dark,
+      :queen_killer
     ]
   end
 

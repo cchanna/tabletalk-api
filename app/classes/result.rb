@@ -14,7 +14,7 @@ class Result
     return Result.new value: value
   end
 
-  def self.failure error, code=nil
+  def self.failure error=nil, code=nil
     return Result.new succeeded: false, error: error, code: code
   end
 

@@ -11,6 +11,8 @@ class Player < ApplicationRecord
       return Blades.load as: self
     when :world_of_adventure
       return Adventure.load as: self
+    when :queen_killer
+      return QueenKiller.load as: self
     end
     return Result.failure "nothing to load"
   end
